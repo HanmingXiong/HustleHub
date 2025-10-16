@@ -16,10 +16,10 @@ This guide provides the steps to set up and run the HustleHub application, which
 Log into PostgreSQL:
 
 ```Bash
-psql -U your_username -d postgres
+psql -U [your_username] -d postgres
 ```
 
-Create an admin role with the username postgres if you don't already have one. This role will be used by the application to create the database
+Create an admin role with the username postgres if you don't already have one. This role will be used by the application to create the database.
 
 ```SQL
 CREATE ROLE postgres WITH LOGIN SUPERUSER PASSWORD 'yourpassword';
