@@ -1,17 +1,21 @@
-<h1>Angular + FastAPI Connection</h1>
+<header>
+  <h1>
+    Welcome to {{ title }}!
+  </h1>
 
-@if (message) {
-  <p>Message from backend: {{ message }}</p>
-}
+  <nav>
+    <a routerLink="/home">Home</a>
+    <a routerLink="/about">About</a>
+  </nav>
+</header>
 
-@if (error) {
-  <p>Error: {{ error }}</p>
-}
+<main>
+  <router-outlet></router-outlet>
+</main>
 
-@if (!message && !error) {
-  <p>Loading...</p>
-}
-
+<footer>
+  <p>© 2025 Hustle Hub</p>
+</footer>
 
 
 

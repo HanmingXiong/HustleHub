@@ -1,0 +1,22 @@
+<h2>Home Page!</h2>
+<p>Hustle Hub home page</p>
+
+<hr>
+
+<h3>Backend Connection Test:</h3>
+
+<div *ngIf="!message && !error">
+  <p>Connecting to backend...</p>
+</div>
+
+<div *ngIf="message">
+  <p style="color: green; font-weight: bold;">
+    Success! Message from backend: {{ message }}
+  </p>
+</div>
+
+<div *ngIf="error">
+  <p style="color: red; font-weight: bold;">
+    Error: {{ error }}
+  </p>
+</div>
