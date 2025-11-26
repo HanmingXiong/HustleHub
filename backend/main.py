@@ -6,6 +6,9 @@ from datetime import datetime
 import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
+from routers import auth
+from dotenv import load_dotenv
+load_dotenv()
 
 app = FastAPI()
 models.Base.metadata.create_all(bind=engine)
@@ -22,6 +25,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(auth.router)
 
 def get_db():
     db = SessionLocal()
