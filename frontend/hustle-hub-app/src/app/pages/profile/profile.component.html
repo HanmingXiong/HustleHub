@@ -1,0 +1,187 @@
+<div class="profile-container">
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <div class="profile-banner"></div>
+    <div class="profile-info">
+      <div class="avatar-container">
+        <div class="avatar-large">
+          <span class="avatar-initials">{{ getInitials() }}</span>
+        </div>
+      </div>
+      <div class="header-content">
+        <div class="header-left">
+          <h1 class="profile-name">{{ getFullName() }}</h1>
+          <p class="profile-headline">{{ user.headline }}</p>
+          <div class="profile-meta">
+            <span class="meta-item">📍 {{ user.location }}</span>
+            <span class="meta-item">✉️ {{ user.email }}</span>
+            <span class="meta-item">📞 {{ user.phone }}</span>
+          </div>
+        </div>
+        <button class="btn-edit-profile" (click)="toggleEditMode()">
+          {{ isEditMode ? 'Cancel' : 'Edit Profile' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Basic Information Section -->
+  <div class="section-card">
+    <h2 class="section-title">Basic Information</h2>
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input 
+            type="text" 
+            id="firstName" 
+            formControlName="firstName"
+            [readonly]="!isEditMode"
+            [class.readonly]="!isEditMode">
+          <div class="error" *ngIf="profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched">
+            First name is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input 
+            type="text" 
+            id="lastName" 
+            formControlName="lastName"
+            [readonly]="!isEditMode"
+            [class.readonly]="!isEditMode">
+          <div class="error" *ngIf="profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched">
+            Last name is required
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="headline">Headline</label>
+          <input 
+            type="text" 
+            id="headline" 
+            formControlName="headline"
+            [readonly]="!isEditMode"
+            [class.readonly]="!isEditMode"
+            placeholder="e.g., Computer Science Student | Software Developer">
+          <div class="error" *ngIf="profileForm.get('headline')?.invalid && profileForm.get('headline')?.touched">
+            Headline is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input 
+            type="text" 
+            id="location" 
+            formControlName="location"
+            [readonly]="!isEditMode"
+            [class.readonly]="!isEditMode"
+            placeholder="City, State">
+          <div class="error" *ngIf="profileForm.get('location')?.invalid && profileForm.get('location')?.touched">
+            Location is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email"
+            [readonly]="!isEditMode"
+            [class.readonly]="!isEditMode">
+          <div class="error" *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
+            Valid email is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input 
+            type="tel" 
+            id="phone" 
+            formControlName="phone"
+            [readonly]="!isEditMode"
+            [class.readonly]="!isEditMode">
+          <div class="error" *ngIf="profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched">
+            Phone is required
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions" *ngIf="isEditMode">
+        <button type="submit" class="btn-primary" [disabled]="!profileForm.valid || isSaving">
+          {{ isSaving ? 'Saving...' : 'Save Changes' }}
+        </button>
+        <button type="button" class="btn-secondary" (click)="cancelEdit()">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Education Section -->
+  <div class="section-card">
+    <div class="section-header">
+      <h2 class="section-title">Education</h2>
+      <button class="btn-add">+ Add</button>
+    </div>
+    <div class="items-list">
+      <div class="list-item" *ngFor="let edu of education">
+        <div class="item-icon">🎓</div>
+        <div class="item-content">
+          <h3 class="item-title">{{ edu.school }}</h3>
+          <p class="item-subtitle">{{ edu.degree }}<span *ngIf="edu.field"> in {{ edu.field }}</span></p>
+          <p class="item-date">{{ edu.startDate }} - {{ edu.endDate }}</p>
+          <p class="item-detail" *ngIf="edu.gpa">GPA: {{ edu.gpa }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Experience Section -->
+  <div class="section-card">
+    <div class="section-header">
+      <h2 class="section-title">Experience</h2>
+      <button class="btn-add">+ Add</button>
+    </div>
+    <div class="items-list">
+      <div class="list-item" *ngFor="let exp of experience">
+        <div class="item-icon">💼</div>
+        <div class="item-content">
+          <h3 class="item-title">{{ exp.title }}</h3>
+          <p class="item-subtitle">{{ exp.company }} • {{ exp.location }}</p>
+          <p class="item-date">{{ exp.startDate }} - {{ exp.current ? 'Present' : exp.endDate }}</p>
+          <p class="item-description">{{ exp.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skills Section -->
+  <div class="section-card">
+    <div class="section-header">
+      <h2 class="section-title">Skills</h2>
+      <button class="btn-add">+ Add</button>
+    </div>
+    <div class="skills-container">
+      <div class="skill-tag" *ngFor="let skill of skills">
+        {{ skill.name }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Success Toast -->
+<div class="toast success" *ngIf="showSuccessMessage">
+  <span class="toast-icon">✓</span>
+  <span>Profile updated successfully!</span>
+</div>
+
+<!-- Error Toast -->
+<div class="toast error" *ngIf="showErrorMessage">
+  <span class="toast-icon">✗</span>
+  <span>{{ errorMessage }}</span>
+</div>

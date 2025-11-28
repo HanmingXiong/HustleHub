@@ -7,6 +7,7 @@ import { FinancialLiteracyComponent } from './pages/financial-literacy/financial
 import { CreditComponent } from './pages/credit/credit.component';
 import { BudgetingComponent } from './pages/budgeting/budgeting.component';
 import { InvestingComponent } from './pages/investing/investing.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 export const routes: Routes = [
     // Route for the Home page
@@ -39,6 +40,12 @@ export const routes: Routes = [
     {
         path: 'financial-literacy/investing',
         component: InvestingComponent
+    },
+    
+    // Route for the Profile page
+    { 
+        path: 'profile', 
+        component: ProfileComponent 
     },
     
     // Redirects base url to Home page
