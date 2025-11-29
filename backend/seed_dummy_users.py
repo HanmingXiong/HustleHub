@@ -6,7 +6,7 @@ Run from repo root or backend folder:
     cd backend && python seed_dummy_users.py
 """
 from database import SessionLocal
-from models import Users, Employers
+from models import Users, Employers, FinancialResources
 from security import hash_password
 
 
@@ -47,6 +47,23 @@ def get_or_create_employer_profile(db, *, user: Users, company_name: str, descri
     db.refresh(employer)
     print(f"Created employer profile for {company_name} (user_id={user.user_id})")
     return employer
+
+def get_or_create_financial_resource(db, *, website: str, resource_type: str) -> FinancialResources:
+    resource = db.query(FinancialResources).filter(FinancialResources.resource_type == resource_type).first()
+
+    if resource:
+        print(f"Financial resource already exists: {website} ({resource_type})")
+        return resource
+
+    resource = FinancialResources(
+        website=website,
+        resource_type=resource_type
+    )
+    db.add(resource)
+    db.commit()
+    db.refresh(resource)
+    print(f"Created financial resource: {website} ({resource_type})")
+    return resource
 
 
 def main():
@@ -108,6 +125,23 @@ def main():
             email="bob@applicants.com",
             password="password123",
             role="applicant",
+        )
+
+        # Seed financial resources
+        get_or_create_financial_resource(
+            db,
+            website="https://www.creditkarma.com",
+            resource_type="credit"
+        )
+        get_or_create_financial_resource(
+            db,
+            website="https://www.mint.com",
+            resource_type="budget"
+        )
+        get_or_create_financial_resource(
+            db,
+            website="https://www.robinhood.com",
+            resource_type="invest"
         )
     finally:
         db.close()

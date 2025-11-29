@@ -103,3 +103,16 @@ class Notifications(Base):
     __table_args__ = (
         Index('idx_notifications_user', 'user_id'),
     )
+
+class FinancialResources(Base):
+    __tablename__ = 'financial_resources'
+
+    resource_id = Column(Integer, primary_key=True, autoincrement=True)
+    website = Column(String(255), nullable=False)
+    resource_type = Column(String(50), nullable=False)
+    created_at = Column(TIMESTAMP, default=func.current_timestamp())
+
+    __table_args__ = (
+        CheckConstraint("resource_type IN ('credit', 'budget', 'invest')", name='financial_resources_type_check'),
+        Index('idx_financial_resources_type', 'resource_type'),
+    )
