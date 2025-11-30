@@ -38,9 +38,10 @@ def get_user_from_token(request: Request, db: Session) -> Users:
 
     return user
 
-def require_admin(user: Users):
+def require_admin(user: Users = Depends(get_user_from_token)):
     if user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin privileges required")
+    return user
 
 # — REGISTRATION —
 @router.post("/register", response_model=UserOut)

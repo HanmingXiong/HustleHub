@@ -15,7 +15,7 @@ export class BudgetingComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.http.get<any[]>('http://localhost:8000/financial-resources/budget')
+    this.http.get<any[]>('http://localhost:8000/financial-literacy/budget')
       .subscribe(data => {
         this.resources = data;
       });

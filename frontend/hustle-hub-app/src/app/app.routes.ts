@@ -24,7 +24,7 @@ export const routes: Routes = [
     },
 
     {
-        path: 'financial',
+        path: 'financial-literacy',
         component: FinancialLiteracyComponent
     },
 
