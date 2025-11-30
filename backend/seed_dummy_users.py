@@ -49,7 +49,8 @@ def get_or_create_employer_profile(db, *, user: Users, company_name: str, descri
     return employer
 
 def get_or_create_financial_resource(db, *, website: str, resource_type: str) -> FinancialResources:
-    resource = db.query(FinancialResources).filter(FinancialResources.resource_type == resource_type).first()
+    resource = db.query(FinancialResources).filter(FinancialResources.website == website,
+                                                   FinancialResources.resource_type == resource_type).first()
 
     if resource:
         print(f"Financial resource already exists: {website} ({resource_type})")
@@ -141,6 +142,11 @@ def main():
         get_or_create_financial_resource(
             db,
             website="https://www.robinhood.com",
+            resource_type="invest"
+        )
+        get_or_create_financial_resource(
+            db,
+            website = "https://www.fidelity.com",
             resource_type="invest"
         )
     finally:
