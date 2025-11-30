@@ -1,0 +1,98 @@
+.auth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  background: #f5f7fb;
+  padding: 2rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e3e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #d5dbe6;
+  background: #f3f5f9;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.tabs button.active {
+  background: #1f6feb;
+  color: white;
+  border-color: #1f6feb;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-weight: 600;
+  color: #2a2f3a;
+}
+
+input {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #d5dbe6;
+  border-radius: 6px;
+}
+
+.roles {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+}
+
+.roles input {
+  margin-right: 0.35rem;
+}
+
+button {
+  padding: 0.65rem 0.8rem;
+  border: none;
+  background: #1f6feb;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.message {
+  margin-top: 0.75rem;
+  color: #1f7a1f;
+  font-weight: 600;
+}
+
+.error {
+  margin-top: 0.75rem;
+  color: #c62828;
+  font-weight: 600;
+}
