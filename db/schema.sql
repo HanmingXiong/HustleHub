@@ -56,6 +56,15 @@ CREATE TABLE notifications (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Financial Resources
+CREATE TABLE financial_resources (
+    resource_id SERIAL PRIMARY KEY,
+    website VARCHAR(255) NOT NULL,
+    resource_type VARCHAR(50) NOT NULL
+        CHECK (resource_type IN ('credit', 'budget', 'invest')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- 3. Indexes
 CREATE INDEX idx_jobs_location     ON jobs(location);
 CREATE INDEX idx_jobs_type         ON jobs(job_type);
