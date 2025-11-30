@@ -20,7 +20,7 @@ export class HomeComponent implements OnInit { // Implement OnInit
 
   // The http.get() logic now lives here
   ngOnInit() {
-    this.http.get<{ message: string }>('http://127.0.0.1:8000/')
+    this.http.get<{ message: string }>('http://localhost:8000/')
       .subscribe({
         next: (response) => {
           this.message = response.message;

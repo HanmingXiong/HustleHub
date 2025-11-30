@@ -8,6 +8,7 @@ import { CreditComponent } from './pages/credit/credit.component';
 import { BudgetingComponent } from './pages/budgeting/budgeting.component';
 import { InvestingComponent } from './pages/investing/investing.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { AuthComponent } from './pages/auth/auth.component';
 
 export const routes: Routes = [
     // Route for the Home page
@@ -41,6 +42,11 @@ export const routes: Routes = [
         path: 'financial-literacy/investing',
         component: InvestingComponent
     },
+
+    {
+        path: 'auth',
+        component: AuthComponent
+    },
     
     // Route for the Profile page
     { 
@@ -51,7 +57,7 @@ export const routes: Routes = [
     // Redirects base url to Home page
     { 
         path: '', 
-        redirectTo: 'home', 
+        redirectTo: 'auth', 
         pathMatch: 'full' 
     },
     

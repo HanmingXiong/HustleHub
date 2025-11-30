@@ -1,0 +1,56 @@
+<section class="auth">
+  <div class="card">
+    <div class="tabs">
+      <button [class.active]="mode === 'login'" (click)="switchMode('login')">Login</button>
+      <button [class.active]="mode === 'register'" (click)="switchMode('register')">Register</button>
+    </div>
+
+    <div *ngIf="mode === 'register'" class="form">
+      <h2>Create Account</h2>
+      <label>
+        Username
+        <input type="text" [(ngModel)]="registerData.username" name="regUsername" />
+      </label>
+      <label>
+        Email
+        <input type="email" [(ngModel)]="registerData.email" name="regEmail" />
+      </label>
+      <label>
+        Password
+        <input type="password" [(ngModel)]="registerData.password" name="regPassword" />
+      </label>
+      <div class="roles">
+        <span>Account type:</span>
+        <label>
+          <input type="radio" [(ngModel)]="registerData.role" name="regRole" value="applicant" />
+          Applicant
+        </label>
+        <label>
+          <input type="radio" [(ngModel)]="registerData.role" name="regRole" value="employer" />
+          Employer
+        </label>
+      </div>
+      <button (click)="register()" [disabled]="registering">
+        {{ registering ? 'Registering...' : 'Register' }}
+      </button>
+    </div>
+
+    <div *ngIf="mode === 'login'" class="form">
+      <h2>Login</h2>
+      <label>
+        Email
+        <input type="email" [(ngModel)]="loginData.email" name="loginEmail" />
+      </label>
+      <label>
+        Password
+        <input type="password" [(ngModel)]="loginData.password" name="loginPassword" />
+      </label>
+      <button (click)="login()" [disabled]="loggingIn">
+        {{ loggingIn ? 'Logging in...' : 'Login' }}
+      </button>
+    </div>
+
+    <p class="message" *ngIf="message">{{ message }}</p>
+    <p class="error" *ngIf="error">{{ error }}</p>
+  </div>
+</section>

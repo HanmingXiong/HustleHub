@@ -70,16 +70,21 @@ def main():
     db = SessionLocal()
     try:
         # Only create an admin if none exists
+        admin_password = "password123"
         existing_admin = db.query(Users).filter(Users.role == "admin").first()
         if existing_admin:
             print(f"Admin already exists: {existing_admin.email} (user_id={existing_admin.user_id})")
+            # Ensure the admin can log in with the known password
+            existing_admin.password_hash = hash_password(admin_password)
+            db.commit()
+            print("Admin password has been reset to password123.")
             admin = existing_admin
         else:
             admin = get_or_create_user(
                 db,
                 username="admin",
                 email="admin@example.com",
-                password="password123",
+                password=admin_password,
                 role="admin",
             )
 

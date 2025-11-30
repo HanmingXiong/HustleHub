@@ -9,6 +9,15 @@
     <a routerLink="/financial">Financial</a>
     <a routerLink="/profile">Profile</a>
   </nav>
+  <div class="user-actions">
+    <ng-container *ngIf="currentUser; else loggedOut">
+      <span class="greeting">Hi, {{ currentUser.username }}</span>
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </ng-container>
+    <ng-template #loggedOut>
+      <a class="auth-link" routerLink="/auth">Login/Register</a>
+    </ng-template>
+  </div>
 </header>
 
 <main>
@@ -355,5 +364,3 @@
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-
-
