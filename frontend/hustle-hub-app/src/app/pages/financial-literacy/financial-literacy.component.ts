@@ -33,7 +33,7 @@ export class FinancialLiteracyComponent {
     }
 
     const body = { website: this.website, resource_type: this.resource_type };
-    this.http.post('http://localhost:8000/financial', body, { withCredentials: true })
+    this.http.post('http://localhost:8000/financial-literacy', body, { withCredentials: true })
       .subscribe({
         next: () => {
           this.message = 'Resource created successfully!';

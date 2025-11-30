@@ -21,7 +21,7 @@ def get_db():
     finally:
         db.close()
 
-def get_user_from_token(request: Request, db: Session) -> Users:
+def get_user_from_token(request: Request, db: Session = Depends(get_db)) -> Users:
     token = request.cookies.get(COOKIE_NAME)
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")

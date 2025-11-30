@@ -17,21 +17,21 @@ def get_resources(resource_type: str, db: Session = Depends(get_db)):
         FinancialResources.resource_type == resource_type
     ).all()
 
-# @router.post("", response_model=None)
-# def create_financial_resource(
-#     resource_in: FinancialResourceCreate, 
-#     db: Session = Depends(get_db),
-#     token: Users = Depends(get_user_from_token),
-# ):
-#     require_admin(token) 
+@router.post("", response_model=None)
+def create_financial_resource(
+    resource_in: FinancialResourceCreate, 
+    db: Session = Depends(get_db),
+    token: Users = Depends(get_user_from_token),
+):
+    require_admin(token) 
 
-#     resource = FinancialResources(
-#         website=resource_in.website,
-#         resource_type=resource_in.resource_type,
-#     )
+    resource = FinancialResources(
+        website=resource_in.website,
+        resource_type=resource_in.resource_type,
+    )
 
-#     db.add(resource)
-#     db.commit()
-#     db.refresh(resource)
+    db.add(resource)
+    db.commit()
+    db.refresh(resource)
 
-#     return resource
+    return resource
