@@ -1,34 +1,77 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { CommonModule } from '@angular/common'; // Import CommonModule
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
+
+// Define the shape of a Job object based on your DB Schema
+export interface Job {
+  job_id: number;
+  employer_id: number;
+  company_name: string;
+  title: string;
+  description: string;
+  job_type: string;
+  location: string;
+  pay_range: string;
+  date_posted: string;
+  is_active: boolean;
+}
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule], // Add CommonModule here
+  imports: [CommonModule, FormsModule, RouterModule], 
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent implements OnInit { // Implement OnInit
+export class HomeComponent implements OnInit {
   
-  // Properties to hold the response or error
-  message: string | null = null;
-  error: string | null = null;
+  // Data containers
+  jobs: Job[] = [];
+  filteredJobs: Job[] = [];
 
-  // Inject HttpClient here
-  constructor(private http: HttpClient) {}
+  // Search/Filter states
+  searchTerm: string = '';
+  searchLocation: string = '';
+  
+  // User State (Mocked for now - usually comes from an Auth Service)
+  userRole: 'applicant' | 'employer' | 'admin' = 'employer'; 
 
-  // The http.get() logic now lives here
+  constructor(private http: HttpClient, private router: Router) {}
+
   ngOnInit() {
-    this.http.get<{ message: string }>('http://localhost:8000/')
+    this.fetchJobs();
+  }
+
+  fetchJobs() {
+    // We expect the backend to return a list of active jobs including company names
+    this.http.get<Job[]>('http://localhost:8000/jobs') 
       .subscribe({
-        next: (response) => {
-          this.message = response.message;
+        next: (data) => {
+          this.jobs = data;
+          this.filteredJobs = data; // Initialize filtered list with all jobs
         },
         error: (err) => {
-          this.error = "Failed to connect to backend";
-          console.error('Error fetching message:', err);
+          console.error('Error fetching jobs:', err);
         }
       });
+  }
+
+  // Filter logic for Title and Location
+  filterJobs() {
+    this.filteredJobs = this.jobs.filter(job => {
+      const matchTitle = job.title.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchLocation = job.location.toLowerCase().includes(this.searchLocation.toLowerCase());
+      return matchTitle && matchLocation;
+    });
+  }
+
+  navigateToCreateJob() {
+    this.router.navigate(['/create-job']);
+  }
+
+  navigateToApply(jobId: number) {
+    this.router.navigate(['/apply', jobId]);
   }
 }
