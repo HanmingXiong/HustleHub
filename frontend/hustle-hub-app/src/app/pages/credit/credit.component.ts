@@ -15,7 +15,7 @@ export class CreditComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.http.get<any[]>('http://localhost:8000/financial-resources/credit')
+    this.http.get<any[]>('http://localhost:8000/financial-literacy/credit')
       .subscribe(data => {
         this.resources = data;
       });
