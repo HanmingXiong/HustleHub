@@ -11,6 +11,10 @@ class Users(Base):
     email = Column(String(150), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
     role = Column(String(20), default='applicant', nullable=True)
+    first_name = Column(String(100))
+    last_name = Column(String(100))
+    phone = Column(String(20))
+    resume_file = Column(String(500))
     created_at = Column(TIMESTAMP, default=func.current_timestamp())
     
     # Relationships

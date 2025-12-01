@@ -1,0 +1,103 @@
+<div class="profile-container">
+  <div *ngIf="isLoading" class="loading">Loading...</div>
+
+  <div *ngIf="!isLoading && user" class="profile-content">
+    <!-- Header -->
+    <div class="profile-header">
+      <div class="avatar" [class.admin-avatar]="user.role === 'admin'">
+        <span *ngIf="user.role === 'admin'">👑</span>
+        <span *ngIf="user.role !== 'admin'">{{ getInitials() }}</span>
+      </div>
+      <div class="header-info">
+        <h1>{{ getFullName() }}</h1>
+        <p>{{ user.role === 'admin' ? 'Administrator' : 'Employer Account' }}</p>
+      </div>
+      <button class="btn-edit" (click)="isEditMode = !isEditMode">
+        {{ isEditMode ? 'Cancel' : 'Edit Profile' }}
+      </button>
+    </div>
+
+    <!-- Basic Info -->
+    <div class="card">
+      <h2>Basic Information</h2>
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Username</label>
+            <input formControlName="username" [readonly]="!isEditMode">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" formControlName="email" [readonly]="!isEditMode">
+          </div>
+          <div class="form-group">
+            <label>First Name</label>
+            <input formControlName="first_name" [readonly]="!isEditMode">
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input formControlName="last_name" [readonly]="!isEditMode">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input formControlName="phone" [readonly]="!isEditMode">
+          </div>
+        </div>
+        <button *ngIf="isEditMode" type="submit" class="btn-primary" [disabled]="!profileForm.valid || isSaving">
+          {{ isSaving ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Change Password -->
+    <div class="card">
+      <h2>Change Password</h2>
+      <div class="form-group">
+        <label>Current Password</label>
+        <div class="password-input">
+          <input [type]="showCurrentPassword ? 'text' : 'password'" [(ngModel)]="currentPassword" placeholder="Enter current password">
+          <button type="button" class="btn-toggle-password" (click)="showCurrentPassword = !showCurrentPassword">
+            {{ showCurrentPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>New Password</label>
+        <div class="password-input">
+          <input [type]="showNewPassword ? 'text' : 'password'" [(ngModel)]="newPassword" placeholder="Enter new password">
+          <button type="button" class="btn-toggle-password" (click)="showNewPassword = !showNewPassword">
+            {{ showNewPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Confirm New Password</label>
+        <div class="password-input">
+          <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="confirmPassword" placeholder="Confirm new password">
+          <button type="button" class="btn-toggle-password" (click)="showConfirmPassword = !showConfirmPassword">
+            {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+      </div>
+      <button class="btn-primary" (click)="changePassword()" [disabled]="isChangingPassword">
+        {{ isChangingPassword ? 'Changing...' : 'Change Password' }}
+      </button>
+    </div>
+
+    <!-- Role-specific Info -->
+    <div class="card" *ngIf="user.role === 'employer'">
+      <h2>Company Information</h2>
+      <p class="info-text">Manage your company details and job postings from Home page.</p>
+    </div>
+    
+    <div class="card" *ngIf="user.role === 'admin'">
+      <h2>Administrator Access</h2>
+      <p class="info-text">You have full access to manage users, jobs, and system settings.</p>
+    </div>
+  </div>
+
+  <!-- Toast Message -->
+  <div *ngIf="message" class="toast" [class.success]="messageType === 'success'" [class.error]="messageType === 'error'">
+    {{ message }}
+  </div>
+</div>
