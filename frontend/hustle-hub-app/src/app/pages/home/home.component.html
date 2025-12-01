@@ -1,22 +1,62 @@
-<h2>Home Page!</h2>
-<p>Hustle Hub home page</p>
+<div class="container">
+  
+  <header class="page-header">
+    <h2>Available Jobs</h2>
+    
+    <button 
+      *ngIf="isEmployer" 
+      class="btn-primary create-job-btn"
+      (click)="navigateToCreateJob()">
+      + Post a Job
+    </button>
+  </header>
 
-<hr>
+  <div class="search-section">
+    <input 
+      type="text" 
+      placeholder="Search by Job Title..." 
+      [(ngModel)]="searchTerm" 
+      (input)="filterJobs()"
+      class="search-input"
+    >
+    <input 
+      type="text" 
+      placeholder="Filter by Location..." 
+      [(ngModel)]="searchLocation" 
+      (input)="filterJobs()"
+      class="search-input"
+    >
+  </div>
 
-<h3>Backend Connection Test:</h3>
+  <hr>
 
-<div *ngIf="!message && !error">
-  <p>Connecting to backend...</p>
-</div>
+  <div class="job-list">
+    <div *ngIf="filteredJobs.length === 0">
+      <p>No active jobs found matching your criteria.</p>
+    </div>
 
-<div *ngIf="message">
-  <p style="color: green; font-weight: bold;">
-    Success! Message from backend: {{ message }}
-  </p>
-</div>
+    <div *ngFor="let job of filteredJobs" class="job-card">
+      <div class="job-header">
+        <h3>{{ job.title }}</h3>
+        <span class="job-type">{{ job.job_type }}</span>
+      </div>
+      
+      <h4 class="company-name">{{ job.company_name }}</h4>
+      
+      <div class="job-details">
+        <p><strong>Location:</strong> {{ job.location }}</p>
+        <p><strong>Pay:</strong> {{ job.pay_range }}</p>
+        <p><strong>Posted:</strong> {{ job.date_posted | date:'mediumDate' }}</p>
+      </div>
 
-<div *ngIf="error">
-  <p style="color: red; font-weight: bold;">
-    Error: {{ error }}
-  </p>
+      <p class="job-description">
+        {{ job.description }}
+      </p>
+
+      <button class="btn-secondary" (click)="navigateToApply(job.job_id)">
+        Apply Now
+      </button>
+    </div>
+  </div>
+
 </div>

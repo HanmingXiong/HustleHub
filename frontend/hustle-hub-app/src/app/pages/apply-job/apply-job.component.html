@@ -1,0 +1,29 @@
+<div class="container">
+    <h2>Apply for: {{ jobTitle }}</h2>
+    
+    <div class="card">
+      <form (ngSubmit)="submitApplication()" *ngIf="!message">
+        
+        <label>
+          Why are you a good fit? (Cover Letter)
+          <textarea 
+            [(ngModel)]="coverLetter" 
+            name="coverLetter" 
+            rows="8" 
+            required
+            placeholder="I am interested in this role because..."></textarea>
+        </label>
+  
+        <div *ngIf="error" class="error-msg">{{ error }}</div>
+  
+        <button type="submit" [disabled]="isSubmitting" class="btn-primary">
+          {{ isSubmitting ? 'Sending...' : 'Submit Application' }}
+        </button>
+      </form>
+  
+      <div *ngIf="message" class="success-msg">
+        <h3> {{ message }}</h3>
+        <p>Redirecting you to home...</p>
+      </div>
+    </div>
+  </div>

@@ -10,12 +10,24 @@ import { InvestingComponent } from './pages/investing/investing.component';
 import { ApplicantProfileComponent } from './pages/applicant-profile/applicant-profile.component';
 import { EmployerProfileComponent } from './pages/employer-profile/employer-profile.component';
 import { AuthComponent } from './pages/auth/auth.component';
+import { CreateJobComponent } from './pages/create-job/create-job.component';
+import { ApplyJobComponent } from './pages/apply-job/apply-job.component';
 
 export const routes: Routes = [
     // Route for the Home page
     { 
         path: 'home', 
         component: HomeComponent 
+    },
+
+    {
+        path: 'create-job',
+        component: CreateJobComponent 
+    },
+    
+    {
+        path: 'apply/:id', 
+        component: ApplyJobComponent
     },
     
     // Route for the About page

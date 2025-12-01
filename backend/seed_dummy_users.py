@@ -6,7 +6,7 @@ Run from repo root or backend folder:
     cd backend && python seed_dummy_users.py
 """
 from database import SessionLocal
-from models import Users, Employers, FinancialResources
+from models import Users, Employers, FinancialResources, Jobs
 from security import hash_password
 
 
@@ -66,6 +66,32 @@ def get_or_create_financial_resource(db, *, website: str, resource_type: str) ->
     print(f"Created financial resource: {website} ({resource_type})")
     return resource
 
+# added to set up jobs for dummer users
+def get_or_create_job(db, *, employer_profile, title, description, location, pay, job_type):
+    job = db.query(Jobs).filter(
+        Jobs.title == title, 
+        Jobs.employer_id == employer_profile.employer_id
+    ).first()
+    
+    if job:
+        print(f"Job already exists: {title}")
+        return job
+    
+    job = Jobs(
+        employer_id=employer_profile.employer_id,
+        title=title,
+        description=description,
+        job_type=job_type,
+        location=location,
+        pay_range=pay,
+        is_active=True
+    )
+    db.add(job)
+    db.commit()
+    db.refresh(job)
+    print(f"Created job: {title}")
+    return job
+
 
 def main():
     db = SessionLocal()
@@ -96,7 +122,7 @@ def main():
             password="password123",
             role="employer",
         )
-        get_or_create_employer_profile(
+        emp_profile1 = get_or_create_employer_profile(
             db,
             user=employer1,
             company_name="Acme Corp",
@@ -110,7 +136,7 @@ def main():
             password="password123",
             role="employer",
         )
-        get_or_create_employer_profile(
+        emp_profile2 = get_or_create_employer_profile(
             db,
             user=employer2,
             company_name="Globex Inc",
@@ -154,6 +180,29 @@ def main():
             website = "https://www.fidelity.com",
             resource_type="invest"
         )
+
+        # make the jobs for seed
+        get_or_create_job(
+            db,
+            employer_profile=emp_profile1,
+            title="Junior Python Developer",
+            description="Looking for a junior dev to write APIs.",
+            location="New York, NY",
+            pay="$60k - $80k",
+            job_type="full-time"
+        )
+        
+        get_or_create_job(
+            db,
+            employer_profile=emp_profile2,
+            title="Senior Angular Engineer",
+            description="Need an expert in Angular 18.",
+            location="Remote",
+            pay="$120k - $150k",
+            job_type="full-time"
+        )
+
+        # get or create the jobs
     finally:
         db.close()
 

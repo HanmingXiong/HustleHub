@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AuthService, RegisterData, LoginData } from '../../services/auth.service'
 
 type AuthMode = 'login' | 'register';
 type UserRole = 'applicant' | 'employer';
@@ -15,7 +16,7 @@ type UserRole = 'applicant' | 'employer';
   styleUrls: ['./auth.component.css'],
 })
 export class AuthComponent {
-  mode: AuthMode = 'login';
+  mode: 'login' | 'register' = 'login';
   backendUrl = 'http://localhost:8000';
   registering = false;
   loggingIn = false;
@@ -34,7 +35,7 @@ export class AuthComponent {
     password: '',
   };
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
 
   switchMode(mode: AuthMode) {
     this.mode = mode;
@@ -47,20 +48,17 @@ export class AuthComponent {
     this.message = '';
     this.error = '';
 
-    this.http
-      .post(`${this.backendUrl}/auth/register`, this.registerData, {
-        withCredentials: true,
-      })
-      .subscribe({
-        next: (res: any) => {
-          this.message = `Registered ${res.username} as ${res.role}`;
-          this.registering = false;
-        },
-        error: (err) => {
-          this.error = err?.error?.detail || 'Registration failed';
-          this.registering = false;
-        },
-      });
+    this.authService.register(this.registerData).subscribe({
+      next: (user) => {
+        this.message = `Registered ${user.username} as ${user.role}`;
+        this.registering = false;
+        // Optional: auto-login or switch tab here
+      },
+      error: (err) => {
+        this.error = err?.error?.detail || 'Registration failed';
+        this.registering = false;
+      }
+    });
   }
 
   login() {
@@ -68,20 +66,16 @@ export class AuthComponent {
     this.message = '';
     this.error = '';
 
-    this.http
-      .post(`${this.backendUrl}/auth/login`, this.loginData, {
-        withCredentials: true,
-      })
-      .subscribe({
-        next: (res: any) => {
-          this.message = `Logged in as ${res.username}`;
-          this.loggingIn = false;
-          this.router.navigateByUrl('/home');
-        },
-        error: (err) => {
-          this.error = err?.error?.detail || 'Login failed';
-          this.loggingIn = false;
-        },
-      });
+    this.authService.login(this.loginData).subscribe({
+      next: (user) => {
+        this.message = `Logged in as ${user.username}`;
+        this.loggingIn = false;
+        this.router.navigateByUrl('/home');
+      },
+      error: (err) => {
+        this.error = err?.error?.detail || 'Login failed';
+        this.loggingIn = false;
+      }
+    });
   }
 }
