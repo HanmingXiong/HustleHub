@@ -4,7 +4,7 @@
     <h2>Available Jobs</h2>
     
     <button 
-      *ngIf="userRole === 'employer'" 
+      *ngIf="isEmployer" 
       class="btn-primary create-job-btn"
       (click)="navigateToCreateJob()">
       + Post a Job

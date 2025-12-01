@@ -3,8 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { AuthService, User } from '../../services/auth.service';
 
-// Define the shape of a Job object based on your DB Schema
+// job object that matches one defined in job schema
 export interface Job {
   job_id: number;
   employer_id: number;
@@ -27,21 +29,34 @@ export interface Job {
 })
 export class HomeComponent implements OnInit {
   
-  // Data containers
   jobs: Job[] = [];
   filteredJobs: Job[] = [];
 
-  // Search/Filter states
+  // search + filter
   searchTerm: string = '';
   searchLocation: string = '';
-  
-  // User State (Mocked for now - usually comes from an Auth Service)
-  userRole: 'applicant' | 'employer' | 'admin' = 'employer'; 
 
-  constructor(private http: HttpClient, private router: Router) {}
+  // switch for create job button
+  isEmployer: boolean = false;
+  
+  // manage subscription for security
+  private userSub: Subscription | undefined;
+
+  constructor(private http: HttpClient, private router: Router, public authService: AuthService) {}
 
   ngOnInit() {
+    this.userSub = this.authService.currentUser$.subscribe((user: User | null) => {
+      this.isEmployer = user?.role === 'employer';
+    });
+
     this.fetchJobs();
+  }
+
+  // unsub to prevent mem leak
+  ngOnDestroy() {
+    if (this.userSub) {
+      this.userSub.unsubscribe();
+    }
   }
 
   fetchJobs() {
@@ -58,7 +73,7 @@ export class HomeComponent implements OnInit {
       });
   }
 
-  // Filter logic for Title and Location
+  // filter logic for Title and Location
   filterJobs() {
     this.filteredJobs = this.jobs.filter(job => {
       const matchTitle = job.title.toLowerCase().includes(this.searchTerm.toLowerCase());

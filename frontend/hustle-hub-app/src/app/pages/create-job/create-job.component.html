@@ -1,0 +1,45 @@
+<div class="container">
+    <h2>Post a New Job</h2>
+    
+    <div class="card">
+      <form (ngSubmit)="createJob()">
+        
+        <label>
+          Job Title
+          <input type="text" [(ngModel)]="jobData.title" name="title" required placeholder="e.g. Junior Developer">
+        </label>
+  
+        <label>
+          Location
+          <input type="text" [(ngModel)]="jobData.location" name="location" required placeholder="e.g. Remote, New York">
+        </label>
+  
+        <label>
+          Job Type
+          <select [(ngModel)]="jobData.job_type" name="job_type">
+            <option value="full-time">Full-time</option>
+            <option value="part-time">Part-time</option>
+            <option value="gig">Gig / Contract</option>
+            <option value="temporary">Temporary</option>
+            <option value="internship">Internship</option>
+          </select>
+        </label>
+  
+        <label>
+          Pay Range
+          <input type="text" [(ngModel)]="jobData.pay_range" name="pay" placeholder="e.g. $60k - $80k">
+        </label>
+  
+        <label>
+          Description
+          <textarea [(ngModel)]="jobData.description" name="description" rows="5" required></textarea>
+        </label>
+  
+        <div *ngIf="error" class="error-msg">{{ error }}</div>
+  
+        <button type="submit" [disabled]="isSubmitting" class="btn-primary">
+          {{ isSubmitting ? 'Posting...' : 'Post Job' }}
+        </button>
+      </form>
+    </div>
+  </div>
