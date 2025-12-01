@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 
 // Import your new page components
 import { HomeComponent } from './pages/home/home.component';
-import { AboutComponent } from './pages/about/about.component';
 import { FinancialLiteracyComponent } from './pages/financial-literacy/financial-literacy.component';
 import { CreditComponent } from './pages/credit/credit.component';
 import { BudgetingComponent } from './pages/budgeting/budgeting.component';
@@ -12,6 +11,8 @@ import { EmployerProfileComponent } from './pages/employer-profile/employer-prof
 import { AuthComponent } from './pages/auth/auth.component';
 import { CreateJobComponent } from './pages/create-job/create-job.component';
 import { ApplyJobComponent } from './pages/apply-job/apply-job.component';
+import { ApplicationsComponent } from './pages/applications/applications.component';
+import { EmployerDashboardComponent } from './pages/employer-dashboard/employer-dashboard.component'
 
 export const routes: Routes = [
     // Route for the Home page
@@ -29,11 +30,14 @@ export const routes: Routes = [
         path: 'apply/:id', 
         component: ApplyJobComponent
     },
-    
-    // Route for the About page
-    { 
-        path: 'about', 
-        component: AboutComponent 
+    {
+        path: 'applications',
+        component: ApplicationsComponent
+    },
+
+    {
+        path: 'employer/dashboard',
+        component: EmployerDashboardComponent
     },
 
     {

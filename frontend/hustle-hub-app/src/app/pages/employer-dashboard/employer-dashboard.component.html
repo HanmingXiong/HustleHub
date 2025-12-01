@@ -1,0 +1,53 @@
+<div class="container">
+    <h2>Applicant Dashboard</h2>
+  
+    <div *ngIf="message" class="success-msg">{{ message }}</div>
+  
+    <div *ngIf="isLoading">Loading applicants...</div>
+  
+    <div *ngIf="!isLoading && applicants.length === 0" class="empty-state">
+      <p>No applications received yet.</p>
+    </div>
+  
+    <div class="table-responsive" *ngIf="applicants.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>Candidate</th>
+            <th>Applied For</th>
+            <th>Cover Letter</th>
+            <th>Date</th>
+            <th>Status / Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let app of applicants">
+            <td>
+              <div class="candidate-info">
+                <strong>{{ app.applicant_name }}</strong>
+                <span>{{ app.applicant_email }}</span>
+                <a *ngIf="app.resume_file" href="#" class="resume-link">View Resume</a>
+              </div>
+            </td>
+            <td>{{ app.job_title }}</td>
+            <td>
+              <div class="cover-letter" title="{{ app.cover_letter }}">
+                {{ app.cover_letter | slice:0:50 }}...
+              </div>
+            </td>
+            <td>{{ app.date_applied | date:'shortDate' }}</td>
+            <td>
+              <select 
+                [ngModel]="app.status" 
+                (ngModelChange)="updateStatus(app, $event)"
+                [ngClass]="app.status">
+                <option *ngFor="let s of statuses" [value]="s">
+                  {{ s | titlecase }}
+                </option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>

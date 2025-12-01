@@ -5,7 +5,10 @@
 
   <nav>
     <a routerLink="/home">Home</a>
-    <a routerLink="/about">About</a>
+    <a routerLink="/applications">Applications</a>
+    <ng-container *ngIf="currentUser?.role === 'employer'">
+      <a routerLink="/employer/dashboard">Postings</a>
+    </ng-container>
     <a routerLink="/financial-literacy">Financial</a>
     <a [routerLink]="getProfileRoute()">Profile</a>
   </nav>

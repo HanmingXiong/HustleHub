@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterLink, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService } from './services/auth.service';
+
 
 @Component({
   selector: 'app-root',
@@ -17,13 +19,16 @@ export class AppComponent implements OnInit {
   title = 'hustle-hub-app';
   currentUser: { username: string; role: string } | null = null;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, public authService: AuthService) {}
 
   ngOnInit(): void {
     this.refreshUser();
     this.router.events
       .pipe(filter((evt): evt is NavigationEnd => evt instanceof NavigationEnd))
       .subscribe(() => this.refreshUser());
+    this.authService.currentUser$.subscribe(user => {
+        this.currentUser = user; 
+      });
   }
 
   getProfileRoute(): string {
