@@ -121,3 +121,95 @@ def apply_for_job(job_id: int,
     db.add(new_application)
     db.commit()
     return {"message": "Application submitted successfully"}
+
+# to get the applications of the user
+@router.get("/applications/me", response_model=List[schemas_job.ApplicationRead])
+def get_my_applications(
+    db: Session = Depends(get_db), 
+    current_user: models.Users = Depends(get_user_from_token)
+):
+    applications = (
+        db.query(
+            models.Applications.application_id,
+            models.Applications.status,
+            models.Applications.date_applied,
+            models.Applications.job_id,
+            models.Jobs.title.label("job_title"),
+            models.Employers.company_name.label("company_name")
+        )
+        .join(models.Jobs, models.Applications.job_id == models.Jobs.job_id)
+        .join(models.Employers, models.Jobs.employer_id == models.Employers.employer_id)
+        .filter(models.Applications.user_id == current_user.user_id)
+        .order_by(models.Applications.date_applied.desc())
+        .all()
+    )
+
+    return applications
+
+# employer application side
+# get the applications
+@router.get("/employer/applications", response_model=List[schemas_job.EmployerApplicationRead])
+def get_employer_applications(
+    db: Session = Depends(get_db),
+    current_user: models.Users = Depends(get_user_from_token)
+):
+    if current_user.role != 'employer':
+        raise HTTPException(status_code=403, detail="Only employers can access this")
+        
+    results = (
+        db.query(
+            models.Applications.application_id,
+            models.Users.username.label("applicant_name"),
+            models.Users.email.label("applicant_email"),
+            models.Users.resume_file,
+            models.Jobs.title.label("job_title"),
+            models.Applications.cover_letter,
+            models.Applications.status,
+            models.Applications.date_applied
+        )
+        .join(models.Users, models.Applications.user_id == models.Users.user_id)
+        .join(models.Jobs, models.Applications.job_id == models.Jobs.job_id)
+        .join(models.Employers, models.Jobs.employer_id == models.Employers.employer_id)
+        .filter(models.Employers.user_id == current_user.user_id)
+        .order_by(models.Applications.date_applied.desc())
+        .all()
+    )
+
+    return results
+
+# updating the status
+@router.put("/applications/{application_id}/status")
+def update_application_status(
+    application_id: int,
+    status_update: schemas_job.ApplicationStatusUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.Users = Depends(get_user_from_token)
+):
+    if current_user.role != 'employer':
+        raise HTTPException(status_code=403, detail="Only employers can update status")
+
+    valid_statuses = ["pending", "reviewed", "accepted", "rejected"]
+    if status_update.status not in valid_statuses:
+        raise HTTPException(status_code=400, detail="Invalid status")
+
+    # get the applications
+    application = db.query(models.Applications).filter(models.Applications.application_id == application_id).first()
+    if not application:
+        raise HTTPException(status_code=404, detail="Application not found")
+
+    # check job is under the employer
+    job_ownership = (
+        db.query(models.Jobs)
+        .join(models.Employers)
+        .filter(models.Jobs.job_id == application.job_id)
+        .filter(models.Employers.user_id == current_user.user_id)
+        .first()
+    )
+
+    if not job_ownership:
+        raise HTTPException(status_code=403, detail="You are not authorized to manage this application")
+
+    application.status = status_update.status
+    db.commit()
+    
+    return {"message": "Status updated successfully", "status": application.status}

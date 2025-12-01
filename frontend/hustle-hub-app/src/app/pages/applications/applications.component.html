@@ -1,0 +1,34 @@
+<div class="container">
+    <h2>My Job Applications</h2>
+  
+    <div *ngIf="isLoading" class="loading">
+      <p>Loading status...</p>
+    </div>
+  
+    <div *ngIf="error" class="error-msg">
+      {{ error }}
+    </div>
+  
+    <div *ngIf="!isLoading && !error && applications.length === 0" class="empty-state">
+      <p>You haven't applied to any jobs yet.</p>
+      <a routerLink="/home" class="btn-link">Browse Jobs</a>
+    </div>
+  
+    <div class="app-list">
+      <div *ngFor="let app of applications" class="app-card">
+        <div class="card-header">
+          <div>
+            <h3>{{ app.job_title }}</h3>
+            <span class="company">{{ app.company_name }}</span>
+          </div>
+          <div class="status-badge" [ngClass]="app.status">
+            {{ app.status | titlecase }}
+          </div>
+        </div>
+        
+        <div class="card-footer">
+          <span class="date">Applied on: {{ app.date_applied | date:'mediumDate' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
