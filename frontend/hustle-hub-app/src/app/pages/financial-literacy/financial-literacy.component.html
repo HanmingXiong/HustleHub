@@ -25,16 +25,26 @@
     </div>
   </div>
 
-  <!-- Admin Only Form -->
-  <div *ngIf="isAdmin" class="admin-form">
-    <h2>Add New Financial Resource</h2>
+
+<!-- Admin Only Form -->
+<div *ngIf="isAdmin" class="admin-form card">
+  <h2 class="admin-title">Add New Financial Resource</h2>
+
+  <div class="form-group">
+    <label>Website</label>
     <input type="text" placeholder="Website" [(ngModel)]="website" />
+  </div>
+
+  <div class="form-group">
+    <label>Resource Type</label>
     <select [(ngModel)]="resource_type">
       <option value="budget">Budget</option>
       <option value="credit">Credit</option>
       <option value="invest">Invest</option>
     </select>
-    <button (click)="createResource()">Create Resource</button>
-    <p>{{ message }}</p>
   </div>
+
+  <button class="admin-btn" (click)="createResource()">Create Resource</button>
+
+  <p class="form-message">{{ message }}</p>
 </div>
