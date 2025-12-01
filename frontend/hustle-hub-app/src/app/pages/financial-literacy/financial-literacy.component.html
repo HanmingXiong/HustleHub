@@ -4,16 +4,7 @@
     Explore trusted resources to strengthen your financial knowledge.
   </p>
 
-  <!-- Search Bar
-  <div class="search-wrapper">
-    <input
-      type="text"
-      placeholder="Search resources..."
-      class="search-input"
-    />
-  </div> -->
-
-  <!-- Resource Cards -->
+  <!-- Static Resource Cards -->
   <div class="card-grid">
     <div class="resource-card">
       <h2>Budgeting Basics</h2>
@@ -32,5 +23,18 @@
       <p>Beginner-friendly investing guides and calculators.</p>
       <a href="/financial-literacy/investing">Visit Resource →</a>
     </div>
+  </div>
+
+  <!-- Admin Only Form -->
+  <div *ngIf="isAdmin" class="admin-form">
+    <h2>Add New Financial Resource</h2>
+    <input type="text" placeholder="Website" [(ngModel)]="website" />
+    <select [(ngModel)]="resource_type">
+      <option value="budget">Budget</option>
+      <option value="credit">Credit</option>
+      <option value="invest">Invest</option>
+    </select>
+    <button (click)="createResource()">Create Resource</button>
+    <p>{{ message }}</p>
   </div>
 </div>

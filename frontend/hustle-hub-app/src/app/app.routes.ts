@@ -7,7 +7,8 @@ import { FinancialLiteracyComponent } from './pages/financial-literacy/financial
 import { CreditComponent } from './pages/credit/credit.component';
 import { BudgetingComponent } from './pages/budgeting/budgeting.component';
 import { InvestingComponent } from './pages/investing/investing.component';
-import { ProfileComponent } from './pages/profile/profile.component';
+import { ApplicantProfileComponent } from './pages/applicant-profile/applicant-profile.component';
+import { EmployerProfileComponent } from './pages/employer-profile/employer-profile.component';
 import { AuthComponent } from './pages/auth/auth.component';
 
 export const routes: Routes = [
@@ -24,7 +25,7 @@ export const routes: Routes = [
     },
 
     {
-        path: 'financial',
+        path: 'financial-literacy',
         component: FinancialLiteracyComponent
     },
 
@@ -48,10 +49,24 @@ export const routes: Routes = [
         component: AuthComponent
     },
     
-    // Route for the Profile page
+    // Profile routes based on role
+    { 
+        path: 'profile/applicant', 
+        component: ApplicantProfileComponent 
+    },
+    { 
+        path: 'profile/employer', 
+        component: EmployerProfileComponent 
+    },
+    { 
+        path: 'profile/admin', 
+        component: EmployerProfileComponent  // same as employer
+    },
+    // Redirect old profile route to home 
     { 
         path: 'profile', 
-        component: ProfileComponent 
+        redirectTo: 'home',
+        pathMatch: 'full'
     },
     
     // Redirects base url to Home page

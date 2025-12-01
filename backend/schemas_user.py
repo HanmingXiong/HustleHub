@@ -23,8 +23,11 @@ class UserOut(UserBase):
         from_attributes = True
 
 class FinancialResourceCreate(BaseModel):
-    website: HttpUrl
-    type: Literal['credit', 'budget', 'invest']
+    website: str
+    resource_type: Literal['credit', 'invest', 'budget']
+
+    class Config:
+        from_attributes = True
 
 class FinancialResourceRead(BaseModel):
     resource_id: int

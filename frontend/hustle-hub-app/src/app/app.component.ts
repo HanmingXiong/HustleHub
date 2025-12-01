@@ -15,7 +15,7 @@ import { filter } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
   title = 'hustle-hub-app';
-  currentUser: { username: string } | null = null;
+  currentUser: { username: string; role: string } | null = null;
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -24,6 +24,11 @@ export class AppComponent implements OnInit {
     this.router.events
       .pipe(filter((evt): evt is NavigationEnd => evt instanceof NavigationEnd))
       .subscribe(() => this.refreshUser());
+  }
+
+  getProfileRoute(): string {
+    if (!this.currentUser) return '/auth';
+    return `/profile/${this.currentUser.role}`;
   }
 
   logout() {
@@ -43,7 +48,7 @@ export class AppComponent implements OnInit {
 
   private refreshUser() {
     this.http
-      .get<{ username: string }>('http://localhost:8000/auth/me', { withCredentials: true })
+      .get<{ username: string; role: string }>('http://localhost:8000/auth/me', { withCredentials: true })
       .subscribe({
         next: (user) => {
           this.currentUser = user;
