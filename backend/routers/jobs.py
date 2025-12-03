@@ -1,4 +1,3 @@
-# routers/jobs.py
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
@@ -10,6 +9,7 @@ from routers.auth import get_user_from_token
 router = APIRouter(prefix="/jobs", tags=["jobs"])
 
 def get_db():
+    # Provide a DB session per request
     db = SessionLocal()
     try:
         yield db
@@ -18,8 +18,7 @@ def get_db():
 
 @router.get("/", response_model=List[schemas_job.JobCard])
 def read_jobs(db: Session = Depends(get_db)):
-    # get jobs and employers of those jobs
-    # only active jobs
+    # Return active jobs enriched with employer info
     jobs_query = (
         db.query(models.Jobs)
         .join(models.Employers)
@@ -33,7 +32,7 @@ def read_jobs(db: Session = Depends(get_db)):
         results.append(schemas_job.JobCard(
             job_id=job.job_id,
             employer_id=job.employer_id,
-            company_name=job.employer.company_name, # Accessing the relationship from models.py
+            company_name=job.employer.company_name,
             title=job.title,
             description=job.description,
             job_type=job.job_type,
@@ -45,16 +44,15 @@ def read_jobs(db: Session = Depends(get_db)):
         
     return results
 
-# for creating a job posting, also send 201 created instead of 200 -> debugging purposes
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_job(job_data: schemas_job.JobCreate, 
                db: Session = Depends(get_db), 
                current_user: models.Users = Depends(get_user_from_token)):
     
+    # Allow employers to create a new job posting
     if current_user.role != 'employer':
         raise HTTPException(status_code=403, detail="Only employers can post jobs")
 
-    # find the employer profile associated with this user
     employer_profile = db.query(models.Employers).filter(models.Employers.user_id == current_user.user_id).first()
     
     if not employer_profile:
@@ -75,14 +73,13 @@ def create_job(job_data: schemas_job.JobCreate,
     db.refresh(new_job)
     return {"message": "Job created successfully", "job_id": new_job.job_id}
 
-# for applications, need specfic job data
 @router.get("/{job_id}", response_model=schemas_job.JobCard)
 def read_job_detail(job_id: int, db: Session = Depends(get_db)):
+    # Fetch a single job with employer info
     job = db.query(models.Jobs).join(models.Employers).filter(models.Jobs.job_id == job_id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     
-    # map to schema
     return schemas_job.JobCard(
         job_id=job.job_id,
         employer_id=job.employer_id,
@@ -102,7 +99,8 @@ def apply_for_job(job_id: int,
                   db: Session = Depends(get_db), 
                   current_user: models.Users = Depends(get_user_from_token)):
 
-    # check if already applied
+    # Submit an application for a specific job
+    # Block duplicate applications from the same user
     existing_app = db.query(models.Applications).filter(
         models.Applications.job_id == job_id,
         models.Applications.user_id == current_user.user_id
@@ -122,12 +120,12 @@ def apply_for_job(job_id: int,
     db.commit()
     return {"message": "Application submitted successfully"}
 
-# to get the applications of the user
 @router.get("/applications/me", response_model=List[schemas_job.ApplicationRead])
 def get_my_applications(
     db: Session = Depends(get_db), 
     current_user: models.Users = Depends(get_user_from_token)
 ):
+    # Applicant view: list their submissions with job metadata
     applications = (
         db.query(
             models.Applications.application_id,
@@ -146,16 +144,16 @@ def get_my_applications(
 
     return applications
 
-# employer application side
-# get the applications
 @router.get("/employer/applications", response_model=List[schemas_job.EmployerApplicationRead])
 def get_employer_applications(
     db: Session = Depends(get_db),
     current_user: models.Users = Depends(get_user_from_token)
 ):
+    # Employer view: applications across jobs they own
     if current_user.role != 'employer':
         raise HTTPException(status_code=403, detail="Only employers can access this")
         
+    # Employer view: applications across jobs they own
     results = (
         db.query(
             models.Applications.application_id,
@@ -177,7 +175,6 @@ def get_employer_applications(
 
     return results
 
-# updating the status
 @router.put("/applications/{application_id}/status")
 def update_application_status(
     application_id: int,
@@ -185,6 +182,7 @@ def update_application_status(
     db: Session = Depends(get_db),
     current_user: models.Users = Depends(get_user_from_token)
 ):
+    # Allow employers to change an application's status
     if current_user.role != 'employer':
         raise HTTPException(status_code=403, detail="Only employers can update status")
 
@@ -192,12 +190,11 @@ def update_application_status(
     if status_update.status not in valid_statuses:
         raise HTTPException(status_code=400, detail="Invalid status")
 
-    # get the applications
     application = db.query(models.Applications).filter(models.Applications.application_id == application_id).first()
     if not application:
         raise HTTPException(status_code=404, detail="Application not found")
 
-    # check job is under the employer
+    # Ensure the job belongs to the current employer before updating status
     job_ownership = (
         db.query(models.Jobs)
         .join(models.Employers)

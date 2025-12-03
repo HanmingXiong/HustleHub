@@ -1,25 +1,92 @@
-header {
+:host {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f3f6fb 0%, #ffffff 45%, #f6f8fc 100%);
+  color: #0f172a;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.shell {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+}
+
+header {
   background: #1f6feb;
   color: #fff;
+  padding: 0.9rem 0;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+header .shell {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.logo-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  box-shadow: 0 8px 18px rgba(31, 111, 235, 0.35);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 nav {
   display: flex;
+  justify-content: center;
   gap: 1rem;
+  flex: 1;
 }
 
 nav a {
-  color: #fff;
+  color: #e9f0ff;
   text-decoration: none;
   font-weight: 600;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-nav a:hover {
-  text-decoration: underline;
+nav a:hover,
+nav a:focus-visible {
+  background: rgba(233, 240, 255, 0.18);
+  color: #ffffff;
+  outline: none;
 }
 
 .user-actions {
@@ -28,36 +95,60 @@ nav a:hover {
   gap: 0.75rem;
 }
 
-.auth-link {
-  color: #fff;
+.pill-btn,
+.ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0.45rem 0.95rem;
+  font-weight: 700;
   text-decoration: none;
-  font-weight: 600;
-  border: 1px solid #fff;
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
+  border: 1px solid rgba(233, 240, 255, 0.4);
+  color: #0f172a;
+  background: #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.auth-link:hover {
-  background: rgba(255, 255, 255, 0.1);
+.pill-btn:hover,
+.pill-btn:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  background: #f8fbff;
+  outline: none;
 }
 
-.greeting {
-  font-weight: 600;
-}
-
-.logout-btn {
-  padding: 0.35rem 0.75rem;
-  border: 1px solid #fff;
+.ghost-btn {
   background: transparent;
-  color: #fff;
-  border-radius: 6px;
-  cursor: pointer;
+  color: #e9f0ff;
+  border-color: rgba(233, 240, 255, 0.4);
 }
 
-.logout-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+.ghost-btn:hover,
+.ghost-btn:focus-visible {
+  background: rgba(233, 240, 255, 0.18);
+  color: #ffffff;
+  outline: none;
 }
 
 main {
-  padding: 1rem 2rem;
+  flex: 1 0 auto;
+  padding: 2rem 0 2.5rem;
+}
+
+.main-shell {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  padding: 1.5rem;
+  min-height: 420px;
+}
+
+footer {
+  margin-top: auto;
+  padding: 1rem 0 1.5rem;
+  color: #475569;
+  border-top: 1px solid #e2e8f0;
 }

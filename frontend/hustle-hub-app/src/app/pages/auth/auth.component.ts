@@ -52,7 +52,6 @@ export class AuthComponent {
       next: (user) => {
         this.message = `Registered ${user.username} as ${user.role}`;
         this.registering = false;
-        // Optional: auto-login or switch tab here
       },
       error: (err) => {
         this.error = err?.error?.detail || 'Registration failed';

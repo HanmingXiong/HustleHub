@@ -8,7 +8,7 @@ router = APIRouter(prefix="/financial-literacy", tags=["Financial Resources"])
 
 @router.get("/{resource_type}", response_model=list[FinancialResourceRead])
 def get_resources(resource_type: str, db: Session = Depends(get_db)):
-
+    # Fetch resources for a given category (credit/budget/invest)
     valid_types = {"credit", "budget", "invest"}
     if resource_type not in valid_types:
         raise HTTPException(status_code=400, detail="Invalid resource type")
@@ -23,6 +23,7 @@ def create_financial_resource(
     db: Session = Depends(get_db),
     token: Users = Depends(get_user_from_token),
 ):
+    # Admin-only creation of financial resources
     require_admin(token) 
 
     resource = FinancialResources(

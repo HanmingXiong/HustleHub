@@ -57,7 +57,7 @@
     cursor: pointer;
   }
   
-  /* Color coding the select box based on status */
+  /* Highlight status selector by current state */
   select.pending { border-left: 4px solid #ffc107; }
   select.reviewed { border-left: 4px solid #17a2b8; }
   select.accepted { border-left: 4px solid #28a745; }

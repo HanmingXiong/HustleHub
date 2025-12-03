@@ -2,7 +2,7 @@
   <div *ngIf="isLoading" class="loading">Loading...</div>
 
   <div *ngIf="!isLoading && user" class="profile-content">
-    <!-- Header -->
+    <!-- Profile header -->
     <div class="profile-header">
       <div class="avatar" [class.admin-avatar]="user.role === 'admin'">
         <span *ngIf="user.role === 'admin'">👑</span>
@@ -17,7 +17,7 @@
       </button>
     </div>
 
-    <!-- Basic Info -->
+    <!-- Basic info -->
     <div class="card">
       <h2>Basic Information</h2>
       <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
@@ -49,7 +49,7 @@
       </form>
     </div>
 
-    <!-- Change Password -->
+    <!-- Password change -->
     <div class="card">
       <h2>Change Password</h2>
       <div class="form-group">
@@ -84,7 +84,7 @@
       </button>
     </div>
 
-    <!-- Role-specific Info -->
+    <!-- Role-specific info -->
     <div class="card" *ngIf="user.role === 'employer'">
       <h2>Company Information</h2>
       <p class="info-text">Manage your company details and job postings from Home page.</p>
@@ -96,7 +96,7 @@
     </div>
   </div>
 
-  <!-- Toast Message -->
+  <!-- Toast notification -->
   <div *ngIf="message" class="toast" [class.success]="messageType === 'success'" [class.error]="messageType === 'error'">
     {{ message }}
   </div>

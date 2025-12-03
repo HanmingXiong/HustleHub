@@ -26,7 +26,7 @@ export class EmployerDashboardComponent implements OnInit {
   isLoading = true;
   message = '';
 
-  // valid statuses
+  // Allowed statuses for employer updates
   statuses = ['pending', 'reviewed', 'accepted', 'rejected'];
 
   constructor(private http: HttpClient) {}

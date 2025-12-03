@@ -2,9 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
-# similar to the schemas_user.py
-# used for job card definition
-
+# Public job card returned to lists/detail pages
 class JobCard(BaseModel):
     job_id: int
     employer_id: int
@@ -20,6 +18,7 @@ class JobCard(BaseModel):
     class Config:
         from_attributes = True
 
+# Incoming payload to create a job posting
 class JobCreate(BaseModel):
     title: str
     description: str
@@ -27,25 +26,27 @@ class JobCreate(BaseModel):
     location: str
     pay_range: Optional[str]
 
+# Applicant submits cover letter when applying
 class ApplicationCreate(BaseModel):
     cover_letter: str
 
-# for the applications page
+# Applicant-facing view of their application status
 class ApplicationRead(BaseModel):
     application_id: int
     status: str
     date_applied: datetime
-    job_title: str       # From Jobs table
-    company_name: str    # From Employers table
+    job_title: str
+    company_name: str
     job_id: int
 
     class Config:
         from_attributes = True
 
-# employer's application side
+# Employer updating an application's status
 class ApplicationStatusUpdate(BaseModel):
     status: str
 
+# Employer-facing view of applications to their job
 class EmployerApplicationRead(BaseModel):
     application_id: int
     applicant_name: str

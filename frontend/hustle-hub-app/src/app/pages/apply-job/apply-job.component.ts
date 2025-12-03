@@ -9,11 +9,10 @@ import { Router, ActivatedRoute } from '@angular/router';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './apply-job.component.html',
-  styleUrls: ['./apply-job.component.css'] // Use the same CSS file or copy it
+  styleUrls: ['./apply-job.component.css']
 })
 export class ApplyJobComponent implements OnInit {
   jobId: string | null = null;
-  // so know waiting for the job to fully load
   jobTitle: string = 'Loading...';
   coverLetter: string = '';
   
@@ -28,10 +27,9 @@ export class ApplyJobComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // get the id from the url
     this.jobId = this.route.snapshot.paramMap.get('id');
     
-    // get specific job details
+    // Hydrate job title for context before submitting
     if (this.jobId) {
       this.http.get<any>(`http://localhost:8000/jobs/${this.jobId}`).subscribe({
         next: (job) => {
@@ -45,7 +43,6 @@ export class ApplyJobComponent implements OnInit {
     }
   }
 
-  // what the button will call
   submitApplication() {
     if (!this.jobId) return;
 
@@ -60,7 +57,6 @@ export class ApplyJobComponent implements OnInit {
         next: () => {
           this.message = 'Application submitted successfully!';
           this.isSubmitting = false;
-          // redirect to home page
           setTimeout(() => this.router.navigate(['/home']), 2000);
         },
         error: (err) => {

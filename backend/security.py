@@ -1,4 +1,3 @@
-# security.py
 import os
 from dotenv import load_dotenv
 from passlib.context import CryptContext
@@ -14,15 +13,18 @@ if not SECRET_KEY:
     raise ValueError("SECRET_KEY is not set, please set it in the .env file.")
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 1 day
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # token lifetime (minutes)
 
 def hash_password(password: str) -> str:
+    # Hash a plaintext password for storage
     return pwd_context.hash(password)
 
 def verify_password(plain: str, hashed: str) -> bool:
+    # Check a plaintext password against a stored hash
     return pwd_context.verify(plain, hashed)
 
 def create_access_token(data: dict, expires_delta=None):
+    # Issue a signed JWT with an expiration claim
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})

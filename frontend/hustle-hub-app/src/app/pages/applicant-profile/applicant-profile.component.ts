@@ -23,7 +23,7 @@ export class ApplicantProfileComponent implements OnInit {
   message = '';
   messageType: 'success' | 'error' = 'success';
   
-  // Password change
+  // Password change state
   currentPassword = '';
   newPassword = '';
   confirmPassword = '';

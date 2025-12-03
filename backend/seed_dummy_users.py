@@ -1,16 +1,11 @@
-"""
-One-time helper script to seed local development data.
-Creates: 1 admin, 2 employers (with employer profiles), 2 applicants.
-
-Run from repo root or backend folder:
-    cd backend && python seed_dummy_users.py
-"""
+"""Seed local development data with predictable users, profiles, and sample jobs."""
 from database import SessionLocal
-from models import Users, Employers, FinancialResources, Jobs
+from models import Users, Employers, FinancialResources, Jobs, Applications
 from security import hash_password
 
 
 def get_or_create_user(db, *, username: str, email: str, password: str, role: str) -> Users:
+    # Create a user if missing, otherwise return the existing record
     user = db.query(Users).filter(Users.email == email).first()
     if user:
         print(f"User already exists: {email} (role={user.role})")
@@ -30,6 +25,7 @@ def get_or_create_user(db, *, username: str, email: str, password: str, role: st
 
 
 def get_or_create_employer_profile(db, *, user: Users, company_name: str, description: str = "") -> Employers:
+    # Ensure the employer profile exists for the given user
     employer = db.query(Employers).filter(Employers.user_id == user.user_id).first()
     if employer:
         print(f"Employer profile already exists for user_id={user.user_id}")
@@ -49,6 +45,7 @@ def get_or_create_employer_profile(db, *, user: Users, company_name: str, descri
     return employer
 
 def get_or_create_financial_resource(db, *, website: str, resource_type: str) -> FinancialResources:
+    # Seed a financial resource entry if it doesn't exist
     resource = db.query(FinancialResources).filter(FinancialResources.website == website,
                                                    FinancialResources.resource_type == resource_type).first()
 
@@ -66,8 +63,8 @@ def get_or_create_financial_resource(db, *, website: str, resource_type: str) ->
     print(f"Created financial resource: {website} ({resource_type})")
     return resource
 
-# added to set up jobs for dummer users
 def get_or_create_job(db, *, employer_profile, title, description, location, pay, job_type):
+    """Attach a job to the given employer if it doesn't already exist."""
     job = db.query(Jobs).filter(
         Jobs.title == title, 
         Jobs.employer_id == employer_profile.employer_id
@@ -92,16 +89,21 @@ def get_or_create_job(db, *, employer_profile, title, description, location, pay
     print(f"Created job: {title}")
     return job
 
+def reset_jobs(db):
+    """Remove existing seeded jobs and dependent applications."""
+    deleted_apps = db.query(Applications).delete()
+    deleted_jobs = db.query(Jobs).delete()
+    db.commit()
+    print(f"Cleared existing jobs ({deleted_jobs}) and applications ({deleted_apps}).")
 
 def main():
+    # Seed baseline users, employers, resources, and fresh job listings
     db = SessionLocal()
     try:
-        # Only create an admin if none exists
         admin_password = "password123"
         existing_admin = db.query(Users).filter(Users.role == "admin").first()
         if existing_admin:
             print(f"Admin already exists: {existing_admin.email} (user_id={existing_admin.user_id})")
-            # Ensure the admin can log in with the known password
             existing_admin.password_hash = hash_password(admin_password)
             db.commit()
             print("Admin password has been reset to password123.")
@@ -115,6 +117,7 @@ def main():
                 role="admin",
             )
 
+        # Seed two employers with profiles
         employer1 = get_or_create_user(
             db,
             username="acme_hr",
@@ -159,7 +162,6 @@ def main():
             role="applicant",
         )
 
-        # Seed financial resources
         get_or_create_financial_resource(
             db,
             website="https://www.creditkarma.com",
@@ -181,28 +183,29 @@ def main():
             resource_type="invest"
         )
 
-        # make the jobs for seed
+        reset_jobs(db)
+
+        # Seed fresh job listings for the two employers
         get_or_create_job(
             db,
             employer_profile=emp_profile1,
-            title="Junior Python Developer",
-            description="Looking for a junior dev to write APIs.",
-            location="New York, NY",
-            pay="$60k - $80k",
-            job_type="full-time"
+            title="Junior Web Content Assistant",
+            description="Upload product listings, edit website text, and manage social media.",
+            location="Remote",
+            pay="$18-$25/hr",
+            job_type="part-time"
         )
         
         get_or_create_job(
             db,
             employer_profile=emp_profile2,
-            title="Senior Angular Engineer",
-            description="Need an expert in Angular 18.",
-            location="Remote",
-            pay="$120k - $150k",
-            job_type="full-time"
+            title="Barista",
+            description="Prepare coffee and other beverages, clean work area, and maintain inventory.",
+            location="Brooklyn, NY",
+            pay="$15-$18/hr + tips",
+            job_type="part-time"
         )
 
-        # get or create the jobs
     finally:
         db.close()
 

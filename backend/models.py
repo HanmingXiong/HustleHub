@@ -17,7 +17,6 @@ class Users(Base):
     resume_file = Column(String(500))
     created_at = Column(TIMESTAMP, default=func.current_timestamp())
     
-    # Relationships
     employer = relationship("Employers", back_populates="user", uselist=False, cascade="all, delete")
     applications = relationship("Applications", back_populates="user", cascade="all, delete")
     notifications = relationship("Notifications", back_populates="user", cascade="all, delete")
@@ -37,7 +36,6 @@ class Employers(Base):
     website = Column(String(200))
     location = Column(String(100))
     
-    # Relationships
     user = relationship("Users", back_populates="employer")
     jobs = relationship("Jobs", back_populates="employer", cascade="all, delete")
 
@@ -55,7 +53,6 @@ class Jobs(Base):
     date_posted = Column(TIMESTAMP, default=func.current_timestamp())
     is_active = Column(Boolean, default=True)
     
-    # Relationships
     employer = relationship("Employers", back_populates="jobs")
     applications = relationship("Applications", back_populates="job", cascade="all, delete")
     
@@ -76,7 +73,6 @@ class Applications(Base):
     status = Column(String(20), default='pending')
     date_applied = Column(TIMESTAMP, default=func.current_timestamp())
     
-    # Relationships
     job = relationship("Jobs", back_populates="applications")
     user = relationship("Users", back_populates="applications")
     
@@ -86,10 +82,6 @@ class Applications(Base):
         {'sqlite_autoincrement': True},
         
     )
-    
-    # Note that UNIQUE constraint on (job_id, user_id) is handled in __table_args__ if needed
-    # or UniqueConstraint('job_id', 'user_id', name='unique_job_user_application')
-    # can add later to make sure user does not apply to same job twice
 
 
 class Notifications(Base):
@@ -101,7 +93,6 @@ class Notifications(Base):
     is_read = Column(Boolean, default=False)
     created_at = Column(TIMESTAMP, default=func.current_timestamp())
     
-    # Relationships
     user = relationship("Users", back_populates="notifications")
     
     __table_args__ = (

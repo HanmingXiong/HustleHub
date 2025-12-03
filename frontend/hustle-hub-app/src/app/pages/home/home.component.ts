@@ -6,7 +6,6 @@ import { RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService, User } from '../../services/auth.service';
 
-// job object that matches one defined in job schema
 export interface Job {
   job_id: number;
   employer_id: number;
@@ -32,14 +31,11 @@ export class HomeComponent implements OnInit {
   jobs: Job[] = [];
   filteredJobs: Job[] = [];
 
-  // search + filter
   searchTerm: string = '';
   searchLocation: string = '';
 
-  // switch for create job button
   isEmployer: boolean = false;
   
-  // manage subscription for security
   private userSub: Subscription | undefined;
 
   constructor(private http: HttpClient, private router: Router, public authService: AuthService) {}
@@ -52,7 +48,7 @@ export class HomeComponent implements OnInit {
     this.fetchJobs();
   }
 
-  // unsub to prevent mem leak
+  // Avoid leaking the auth subscription
   ngOnDestroy() {
     if (this.userSub) {
       this.userSub.unsubscribe();
@@ -60,12 +56,12 @@ export class HomeComponent implements OnInit {
   }
 
   fetchJobs() {
-    // We expect the backend to return a list of active jobs including company names
+    // Load active jobs with employer names for the landing grid
     this.http.get<Job[]>('http://localhost:8000/jobs') 
       .subscribe({
         next: (data) => {
           this.jobs = data;
-          this.filteredJobs = data; // Initialize filtered list with all jobs
+          this.filteredJobs = data;
         },
         error: (err) => {
           console.error('Error fetching jobs:', err);
@@ -73,8 +69,8 @@ export class HomeComponent implements OnInit {
       });
   }
 
-  // filter logic for Title and Location
   filterJobs() {
+    // Client-side filter by title and location
     this.filteredJobs = this.jobs.filter(job => {
       const matchTitle = job.title.toLowerCase().includes(this.searchTerm.toLowerCase());
       const matchLocation = job.location.toLowerCase().includes(this.searchLocation.toLowerCase());

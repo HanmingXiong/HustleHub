@@ -24,7 +24,7 @@
     margin-top: 0.25rem;
     border: 1px solid #ccc;
     border-radius: 4px;
-    box-sizing: border-box; /* Ensures padding doesn't break width */
+    box-sizing: border-box;
   }
   
   .btn-primary {
