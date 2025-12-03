@@ -25,7 +25,7 @@ export class ApiService {
   }
 
   post<T>(endpoint: string, data: any): Observable<T> {
-    // Don't set Content-Type for FormData (browser will set it with boundary)
+    // Let the browser set multipart boundaries when sending FormData
     if (data instanceof FormData) {
       return this.http.post<T>(`${this.apiUrl}${endpoint}`, data, {
         withCredentials: true

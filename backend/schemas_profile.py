@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 
-# What data we accept when updating a profile
+# Incoming payload when a user edits their profile
 class ProfileUpdate(BaseModel):
     username: Optional[str] = None
     email: Optional[str] = None
@@ -9,7 +9,7 @@ class ProfileUpdate(BaseModel):
     last_name: Optional[str] = None
     phone: Optional[str] = None
 
-# What data we send back to the frontend
+# Shape of profile data returned to clients
 class ProfileResponse(BaseModel):
     user_id: int
     username: str
@@ -23,7 +23,7 @@ class ProfileResponse(BaseModel):
     class Config:
         from_attributes = True
 
-# Change password
+# Payload for password updates
 class PasswordChange(BaseModel):
     current_password: str
     new_password: str

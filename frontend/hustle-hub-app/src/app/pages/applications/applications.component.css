@@ -9,7 +9,7 @@
     margin-bottom: 1.5rem;
   }
   
-  /* Empty State */
+  /* Empty applications view */
   .empty-state {
     text-align: center;
     padding: 3rem;
@@ -26,7 +26,7 @@
     font-weight: bold;
   }
   
-  /* Application Cards */
+  /* Application cards */
   .app-card {
     background: white;
     border: 1px solid #e9ecef;
@@ -66,7 +66,7 @@
     color: #868e96;
   }
   
-  /* Status Badges */
+  /* Status badges by state */
   .status-badge {
     padding: 0.35rem 0.75rem;
     border-radius: 50px;

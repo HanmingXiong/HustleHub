@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Necessary for *ngFor and *ngIf
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { RouterModule } from '@angular/router'; // For routerLink if needed
+import { RouterModule } from '@angular/router';
 
 interface Application {
   application_id: number;
@@ -31,6 +31,7 @@ export class ApplicationsComponent implements OnInit {
   }
 
   fetchApplications() {
+    // Pull the logged-in user's applications with job details
     this.http.get<Application[]>('http://localhost:8000/jobs/applications/me', { withCredentials: true })
       .subscribe({
         next: (data) => {

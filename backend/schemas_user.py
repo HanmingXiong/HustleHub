@@ -1,8 +1,8 @@
-# schemas_user.py
 from typing import Literal
 from pydantic import BaseModel, EmailStr, HttpUrl
 from datetime import datetime
 
+# Base shape for user-facing data
 class UserBase(BaseModel):
     username: str
     email: EmailStr
@@ -22,6 +22,7 @@ class UserOut(UserBase):
     class Config:
         from_attributes = True
 
+# Financial resource payloads
 class FinancialResourceCreate(BaseModel):
     website: str
     resource_type: Literal['credit', 'invest', 'budget']

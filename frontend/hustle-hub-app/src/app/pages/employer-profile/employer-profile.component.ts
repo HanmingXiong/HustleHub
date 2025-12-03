@@ -80,7 +80,7 @@ export class EmployerProfileComponent implements OnInit {
     return fullName || this.user?.username || 'Loading...';
   }
 
-  // Password change
+  // Password change state
   currentPassword = '';
   newPassword = '';
   confirmPassword = '';

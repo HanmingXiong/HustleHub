@@ -29,8 +29,7 @@ export class CreateJobComponent {
     this.isSubmitting = true;
     this.error = '';
 
-    // withCredentials true is important so backend knows who is logged in
-    // makes sure the user is an employer
+    // Send cookies so backend can enforce employer-only access
     this.http.post('http://localhost:8000/jobs/', this.jobData, { withCredentials: true })
       .subscribe({
         next: () => {

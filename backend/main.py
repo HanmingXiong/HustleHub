@@ -10,13 +10,13 @@ from routers import auth, financial_resource, jobs, jobs, profile
 from dotenv import load_dotenv
 load_dotenv()
 
-app = FastAPI()
-models.Base.metadata.create_all(bind=engine)
-
-# define angular's origin
+# Frontend dev origin for CORS
 origins = [
     "http://localhost:4200"
 ]
+
+app = FastAPI()
+models.Base.metadata.create_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,6 +33,7 @@ app.include_router(jobs.router)
 app.include_router(profile.router)
 
 def get_db():
+    # Provide a DB session per request
     db = SessionLocal()
     try:
         yield db
@@ -41,12 +42,7 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
-
-# --- where the classes for schemas will be ---
-
-
-# --- API Endpoints ---
-
 @app.get("/")
 def read_root():
+    # Health endpoint to verify API is up
     return {"message": "Welcome to the HustleHub API"}

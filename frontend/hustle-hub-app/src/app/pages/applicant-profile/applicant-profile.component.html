@@ -2,7 +2,7 @@
   <div *ngIf="isLoading" class="loading">Loading...</div>
 
   <div *ngIf="!isLoading && user" class="profile-content">
-    <!-- Header -->
+    <!-- Profile header -->
     <div class="profile-header">
       <div class="avatar">{{ getInitials() }}</div>
       <div class="header-info">
@@ -14,7 +14,7 @@
       </button>
     </div>
 
-    <!-- Basic Info -->
+    <!-- Basic info -->
     <div class="card">
       <h2>Basic Information</h2>
       <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
@@ -46,7 +46,7 @@
       </form>
     </div>
 
-    <!-- Change Password -->
+    <!-- Password change -->
     <div class="card">
       <h2>Change Password</h2>
       <div class="form-group">
@@ -81,7 +81,7 @@
       </button>
     </div>
 
-    <!-- Resume -->
+    <!-- Resume upload -->
     <div class="card">
       <h2>Resume</h2>
       <div *ngIf="!user.resume_file" class="upload-area">
@@ -111,7 +111,7 @@
     </div>
   </div>
 
-  <!-- Toast Message -->
+  <!-- Toast notification -->
   <div *ngIf="message" class="toast" [class.success]="messageType === 'success'" [class.error]="messageType === 'error'">
     {{ message }}
   </div>

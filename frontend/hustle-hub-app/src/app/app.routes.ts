@@ -1,6 +1,4 @@
 import { Routes } from '@angular/router';
-
-// Import your new page components
 import { HomeComponent } from './pages/home/home.component';
 import { FinancialLiteracyComponent } from './pages/financial-literacy/financial-literacy.component';
 import { CreditComponent } from './pages/credit/credit.component';
@@ -15,7 +13,6 @@ import { ApplicationsComponent } from './pages/applications/applications.compone
 import { EmployerDashboardComponent } from './pages/employer-dashboard/employer-dashboard.component'
 
 export const routes: Routes = [
-    // Route for the Home page
     { 
         path: 'home', 
         component: HomeComponent 
@@ -65,7 +62,7 @@ export const routes: Routes = [
         component: AuthComponent
     },
     
-    // Profile routes based on role
+    // Role-based profile screens
     { 
         path: 'profile/applicant', 
         component: ApplicantProfileComponent 
@@ -76,23 +73,22 @@ export const routes: Routes = [
     },
     { 
         path: 'profile/admin', 
-        component: EmployerProfileComponent  // same as employer
+        component: EmployerProfileComponent
     },
-    // Redirect old profile route to home 
+    // Legacy profile route fallback
     { 
         path: 'profile', 
         redirectTo: 'home',
         pathMatch: 'full'
     },
     
-    // Redirects base url to Home page
+    // Default entry and catch-all redirects
     { 
         path: '', 
         redirectTo: 'auth', 
         pathMatch: 'full' 
     },
     
-    // will redirect non-existing route to home page
     { 
         path: '**', 
         redirectTo: 'home' 
