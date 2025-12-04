@@ -83,7 +83,7 @@
     <div class="card">
       <h2>Resume</h2>
       <div *ngIf="!user.resume_file" class="upload-area">
-        <p>📄 Upload your resume (optional)</p>
+        <p>Upload your resume</p>
         <label class="btn-upload">
           <input type="file" accept=".pdf,.doc,.docx" (change)="onFileSelected($event)" style="display: none;">
           {{ isUploadingResume ? 'Uploading...' : 'Choose File' }}
