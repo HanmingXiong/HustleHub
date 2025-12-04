@@ -212,18 +212,8 @@ def get_employer_applications(
         raise HTTPException(status_code=403, detail="Only employers and admins can access this")
         
     # Employer view: applications across jobs they own
-    results = (
-        db.query(
-            models.Applications.application_id,
-            models.Users.username.label("applicant_name"),
-            models.Users.email.label("applicant_email"),
-            models.Users.user_id.label("applicant_user_id"),
-            models.Users.resume_file,
-            models.Jobs.title.label("job_title"),
-            models.Applications.cover_letter,
-            models.Applications.status,
-            models.Applications.date_applied
-        )
+    applications = (
+        db.query(models.Applications, models.Users, models.Jobs)
         .join(models.Users, models.Applications.user_id == models.Users.user_id)
         .join(models.Jobs, models.Applications.job_id == models.Jobs.job_id)
         .join(models.Employers, models.Jobs.employer_id == models.Employers.employer_id)
@@ -231,6 +221,28 @@ def get_employer_applications(
         .order_by(models.Applications.date_applied.desc())
         .all()
     )
+
+    results = []
+    for app, user, job in applications:
+        # Use full name if available, otherwise username
+        if user.first_name and user.last_name:
+            applicant_name = f"{user.first_name} {user.last_name}"
+        elif user.first_name:
+            applicant_name = user.first_name
+        else:
+            applicant_name = user.username
+        
+        results.append(schemas_job.EmployerApplicationRead(
+            application_id=app.application_id,
+            applicant_name=applicant_name,
+            applicant_email=user.email,
+            applicant_user_id=user.user_id,
+            job_title=job.title,
+            cover_letter=app.cover_letter,
+            resume_file=user.resume_file,
+            status=app.status,
+            date_applied=app.date_applied
+        ))
 
     return results
 
@@ -257,24 +269,36 @@ def get_employer_applications_for_job(
         raise HTTPException(status_code=404, detail="Job not found or you don't have permission")
     
     # Get applications for this specific job
-    results = (
-        db.query(
-            models.Applications.application_id,
-            models.Users.username.label("applicant_name"),
-            models.Users.email.label("applicant_email"),
-            models.Users.user_id.label("applicant_user_id"),
-            models.Users.resume_file,
-            models.Jobs.title.label("job_title"),
-            models.Applications.cover_letter,
-            models.Applications.status,
-            models.Applications.date_applied
-        )
+    applications = (
+        db.query(models.Applications, models.Users, models.Jobs)
         .join(models.Users, models.Applications.user_id == models.Users.user_id)
         .join(models.Jobs, models.Applications.job_id == models.Jobs.job_id)
         .filter(models.Applications.job_id == job_id)
         .order_by(models.Applications.date_applied.desc())
         .all()
     )
+
+    results = []
+    for app, user, job in applications:
+        # Use full name if available, otherwise username
+        if user.first_name and user.last_name:
+            applicant_name = f"{user.first_name} {user.last_name}"
+        elif user.first_name:
+            applicant_name = user.first_name
+        else:
+            applicant_name = user.username
+        
+        results.append(schemas_job.EmployerApplicationRead(
+            application_id=app.application_id,
+            applicant_name=applicant_name,
+            applicant_email=user.email,
+            applicant_user_id=user.user_id,
+            job_title=job.title,
+            cover_letter=app.cover_letter,
+            resume_file=user.resume_file,
+            status=app.status,
+            date_applied=app.date_applied
+        ))
 
     return results
 
