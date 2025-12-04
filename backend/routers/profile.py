@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 import os
 import shutil
@@ -113,6 +114,33 @@ def delete_resume(request: Request, db: Session = Depends(get_db)):
     
     return {"detail": "Resume deleted"}
 
+@router.get("/resume/{user_id}")
+def download_resume(
+    user_id: int,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    # Download a user's resume (for employers viewing applicants)
+    current_user = get_user_from_token(request, db)
+    
+    # Only employers can download other users' resumes
+    if current_user.role != 'employer' and current_user.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to view this resume")
+    
+    target_user = db.query(Users).filter(Users.user_id == user_id).first()
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if not target_user.resume_file or not os.path.exists(target_user.resume_file):
+        raise HTTPException(status_code=404, detail="Resume not found")
+    
+    filename = Path(target_user.resume_file).name
+    return FileResponse(
+        path=target_user.resume_file,
+        filename=filename,
+        media_type='application/octet-stream'
+    )
+
 @router.put("/change-password")
 def change_password(
     password_data: PasswordChange,
@@ -129,3 +157,26 @@ def change_password(
     db.commit()
     
     return {"detail": "Password changed successfully"}
+
+@router.delete("/delete-account")
+def delete_account(
+    password: str,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    # Delete user account after password verification
+    user = get_user_from_token(request, db)
+    
+    # Admins cannot delete their accounts
+    if user.role == 'admin':
+        raise HTTPException(status_code=403, detail="Admins cannot delete their accounts. Please contact support.")
+    
+    # Verify password
+    if not verify_password(password, user.password_hash):
+        raise HTTPException(status_code=400, detail="Incorrect password")
+    
+    # Delete user (cascade will handle related records)
+    db.delete(user)
+    db.commit()
+    
+    return {"detail": "Account deleted successfully"}

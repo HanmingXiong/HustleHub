@@ -25,7 +25,7 @@ export interface LoginData {
   providedIn: 'root'
 })
 export class AuthService {
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  private currentUserSubject = new BehaviorSubject<User | null | undefined>(undefined);
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private api: ApiService) {
@@ -57,7 +57,7 @@ export class AuthService {
     });
   }
 
-  getCurrentUser(): User | null {
+  getCurrentUser(): User | null | undefined {
     return this.currentUserSubject.value;
   }
 

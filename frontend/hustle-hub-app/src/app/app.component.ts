@@ -27,7 +27,9 @@ export class AppComponent implements OnInit {
       .pipe(filter((evt): evt is NavigationEnd => evt instanceof NavigationEnd))
       .subscribe(() => this.refreshUser());
     this.authService.currentUser$.subscribe(user => {
-        this.currentUser = user; 
+        if (user !== undefined) {
+          this.currentUser = user;
+        }
       });
   }
 

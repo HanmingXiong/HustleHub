@@ -26,7 +26,7 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -51,7 +51,7 @@
 
 .btn-edit {
   padding: 0.75rem 1.5rem;
-  background: #4f46e5;
+  background: #f59e0b;
   color: white;
   border: none;
   border-radius: 8px;
@@ -60,7 +60,7 @@
 }
 
 .btn-edit:hover {
-  background: #4338ca;
+  background: #d97706;
 }
 
 .card {
@@ -110,12 +110,12 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #4f46e5;
+  border-color: #f59e0b;
 }
 
 .btn-primary {
   padding: 0.75rem 2rem;
-  background: #4f46e5;
+  background: #f59e0b;
   color: white;
   border: none;
   border-radius: 8px;
@@ -125,7 +125,7 @@
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #4338ca;
+  background: #d97706;
 }
 
 .btn-primary:disabled {
@@ -149,7 +149,7 @@
 .btn-upload {
   display: inline-block;
   padding: 0.75rem 2rem;
-  background: #4f46e5;
+  background: #f59e0b;
   color: white;
   border-radius: 8px;
   cursor: pointer;
@@ -157,7 +157,7 @@
 }
 
 .btn-upload:hover {
-  background: #4338ca;
+  background: #d97706;
 }
 
 .upload-area small {
@@ -239,6 +239,7 @@
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   animation: slideIn 0.3s ease;
+  z-index: 1000;
 }
 
 .toast.success {
@@ -323,100 +324,57 @@
   margin-top: 0.5rem;
 }
 
-
-/* Danger Zone */
-.danger-zone {
-  border: 2px solid #fee2e2;
-  background: #fef2f2;
+.admin-info {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
 }
 
-.danger-zone h2 {
-  color: #dc2626;
+.admin-info h2 {
+  color: #92400e;
 }
 
-.danger-zone .warning-text {
-  color: #991b1b;
-  margin-bottom: 1rem;
+.info-text {
+  color: #78350f;
+  margin: 0;
+  line-height: 1.6;
 }
 
-.btn-danger {
-  background-color: #dc3545;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.card-header h2 {
+  margin: 0;
+}
+
+.card-header .btn-edit {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group textarea {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.2s;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
 }
 
-.btn-danger:hover:not(:disabled) {
-  background-color: #c82333;
-}
-
-.btn-danger:disabled {
-  background-color: #9ca3af;
+.form-group textarea:read-only {
+  background: #f9fafb;
   cursor: not-allowed;
 }
 
-/* Modal */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  max-width: 500px;
-  width: 90%;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-
-.danger-modal {
-  border-top: 4px solid #dc2626;
-}
-
-.danger-modal h3 {
-  color: #dc2626;
-  margin-bottom: 1rem;
-}
-
-.danger-modal .warning-text {
-  background: #fef2f2;
-  border-left: 4px solid #dc2626;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
-  color: #991b1b;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-}
-
-.modal-actions .btn-secondary {
-  background-color: #6c757d;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.modal-actions .btn-secondary:hover {
-  background-color: #5a6268;
+.form-group textarea:focus {
+  outline: none;
+  border-color: #f59e0b;
 }

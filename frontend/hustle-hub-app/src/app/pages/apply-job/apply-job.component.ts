@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-apply-job',
@@ -23,10 +24,19 @@ export class ApplyJobComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
+    // Check if user is an employer and redirect
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser?.role === 'employer') {
+      this.error = 'Employers cannot apply to jobs';
+      setTimeout(() => this.router.navigate(['/home']), 2000);
+      return;
+    }
+
     this.jobId = this.route.snapshot.paramMap.get('id');
     
     // Hydrate job title for context before submitting

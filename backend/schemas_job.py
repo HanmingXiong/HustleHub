@@ -14,6 +14,8 @@ class JobCard(BaseModel):
     pay_range: Optional[str]
     date_posted: datetime
     is_active: bool
+    has_applied: bool = False
+    application_count: int = 0
 
     class Config:
         from_attributes = True
@@ -51,6 +53,7 @@ class EmployerApplicationRead(BaseModel):
     application_id: int
     applicant_name: str
     applicant_email: str
+    applicant_user_id: int
     job_title: str
     cover_letter: str
     resume_file: Optional[str]
