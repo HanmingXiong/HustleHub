@@ -93,15 +93,23 @@
 }
 
 .admin-form input,
-.admin-form select {
+.admin-form select,
+.admin-form textarea {
   padding: 12px 14px;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 16px;
+  font-family: Arial, sans-serif;
+}
+
+.admin-form textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
 .admin-form input:focus,
-.admin-form select:focus {
+.admin-form select:focus,
+.admin-form textarea:focus {
   border-color: #0056d2;
   outline: none;
 }

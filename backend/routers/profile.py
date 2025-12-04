@@ -180,3 +180,19 @@ def delete_account(
     db.commit()
     
     return {"detail": "Account deleted successfully"}
+
+
+@router.delete("/me")
+def delete_my_account(request: Request, db: Session = Depends(get_db)):
+    """Delete own account"""
+    user = get_user_from_token(request, db)
+    
+    # Delete resume file if exists
+    if user.resume_file and os.path.exists(user.resume_file):
+        os.remove(user.resume_file)
+    
+    # Delete user (cascades to related records)
+    db.delete(user)
+    db.commit()
+    
+    return {"message": "Account deleted successfully"}

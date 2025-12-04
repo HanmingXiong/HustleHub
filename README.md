@@ -5,95 +5,232 @@ This guide provides the steps to set up and run the HustleHub application, which
 ## Prerequisites
 
 - PostgreSQL installed
-
 - Python 3 installed
-
 - Node.js & npm installed
 
 ## Setup Instructions
 
-### 1. Database (PostgreSQL)
-Log into PostgreSQL:
+### 1. Backend (FastAPI + SQL Alchemy)
 
-```Bash
-psql -U [your_username] -d postgres
-```
+Navigate to the backend directory and create a virtual environment:
 
-Create an admin role with the username postgres if you don't already have one. This role will be used by the application to create the database.
-
-```SQL
-CREATE ROLE postgres WITH LOGIN SUPERUSER PASSWORD 'yourpassword';
-```
-Exit psql by typing \q.
-
-Run the database creation script to set up the application's database and tables.
-
-```Bash
-psql -U postgres -f db/create_db.sql
-```
-
-### 2. Backend (FastAPI + SQL Alchemy)
-Navigate to the backend directory and create a virtual environment.
-
-```Bash
+```bash
+cd backend/
 python3 -m venv venv
 ```
 
 Activate the virtual environment:
 
-macOS / Linux:
-
-```Bash
+**macOS / Linux:**
+```bash
 source venv/bin/activate
 ```
 
-Windows:
-
-```Bash
+**Windows:**
+```bash
 .\venv\Scripts\activate
 ```
 
-Install the required Python packages:
+Install all required Python packages:
 
-```Bash
-pip install fastapi sqlalchemy uvicorn psycopg2-binary
+```bash
+pip install -r requirements.txt
 ```
 
-### 3. Frontend (Angular)
-Install the Angular CLI globally using npm. This allows you to use the ng command anywhere.
+### 2. Environment Configuration
 
-```Bash
-npm install -g @angular/cli
+Create a `.env` file in the backend directory:
+
+```bash
+cd backend
+touch .env
 ```
 
-## Running the Application
-You'll need two separate terminal windows to run the backend and frontend servers simultaneously.
+Add the following configuration to `backend/.env`:
 
-Terminal 1: Start the Backend
+```bash
+# Security (required)
+SECRET_KEY=your-secret-key-here-change-this-in-production-min-32-chars
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
 
-Make sure the virtual environment is set (should see venv or whatever your virtual env name is in front of command prompt line).
+**Note:** The SECRET_KEY is required for the application to run. Use any random string (minimum 32 characters) for development.
 
-Start the FastAPI server with auto-reloading.
+### 3. Database Setup
 
-```Bash
+**Update the database connection in `backend/database.py`:**
+
+The database connection string is hardcoded in `database.py`. Update it based on your operating system:
+
+**For macOS/Linux:**
+```python
+URL_DATABASE = 'postgresql://admin:admin@localhost:5432/hustlehub'
+```
+
+**For Windows:**
+```python
+URL_DATABASE = 'postgresql://postgres:yourpassword@localhost:5432/hustlehub'
+```
+
+**Start the server to create the database:**
+
+```bash
+cd backend
 uvicorn main:app --reload
 ```
 
-Terminal 2: Start the Frontend
+The server will create all necessary tables automatically.
 
-Make sure you are in the hustble-hub-app directory
+### 4. Seed Database (Optional)
 
-```Bash
-cd frontend/hustle-hub-app
+To populate the database with sample data, run the seed script:
+
+```bash
+python seed_dummy_users.py
 ```
-Serve the Angular application. The --open or -o flag will automatically open it in your default browser.
 
-```Bash
+### 5. Frontend (Angular)
+
+Install the Angular CLI globally:
+
+```bash
+npm install -g @angular/cli
+```
+
+Navigate to the frontend directory and install dependencies:
+
+```bash
+cd frontend/hustle-hub-app/
+npm install
+```
+
+## Running the Application
+
+You'll need two separate terminal windows to run the backend and frontend servers simultaneously.
+
+**Terminal 1: Start the Backend**
+
+Make sure the virtual environment is activated (you should see `venv` in your command prompt).
+
+```bash
+cd backend/
+uvicorn main:app --reload
+```
+
+Backend will run at: http://localhost:8000
+
+**Terminal 2: Start the Frontend**
+
+```bash
+cd frontend/hustle-hub-app/
 ng serve --open
 ```
 
-## Expected Outcome
-You should see this if the ourcome is correct:
+Frontend will run at: http://localhost:4200
 
-Angular + FastAPI Connection 
-Message from backend: Welcome to the HustleHub API
+## Database Management
+
+### Reset Database
+
+If you need to drop and recreate the database:
+
+```bash
+psql postgres
+\c hustlehub
+DROP TABLE users CASCADE;
+\q
+```
+
+Then restart the server to recreate tables automatically.
+
+## Testing
+
+### Backend Testing
+
+The backend has three types of tests:
+
+**Unit Tests** - Fast, isolated tests for individual functions
+```bash
+cd backend/
+pytest -m unit
+```
+
+**Integration Tests** - Test API endpoints with database
+```bash
+cd backend/
+pytest -m integration
+```
+
+**E2E Tests (Backend)** - Test complete user workflows via API
+```bash
+cd backend/
+pytest -m e2e
+```
+
+**Run All Backend Tests**
+```bash
+cd backend/
+pytest
+```
+
+**Run with Coverage**
+```bash
+cd backend/
+pytest --cov
+```
+
+**Note:** You may see deprecation warnings (SQLAlchemy, Pydantic, httpx) - these are normal and don't affect functionality.
+
+### Frontend Testing
+
+Run Angular unit tests:
+
+```bash
+cd frontend/hustle-hub-app/
+ng test
+```
+
+Run tests once (no watch mode):
+
+```bash
+cd frontend/hustle-hub-app/
+ng test --watch=false
+```
+
+**Note:** You may see HTTP error messages in the console - these are expected when tests run without the backend server and don't affect test results.
+
+### E2E Testing (Playwright)
+
+The `e2e/` folder contains browser-based UI tests using Playwright. These tests verify basic page loading and form interactions.
+
+**Prerequisites:**
+- Frontend must be running on http://localhost:4200
+
+**Setup E2E Tests:**
+```bash
+cd e2e/
+npm install
+npx playwright install
+```
+
+**Run E2E Tests:**
+```bash
+cd e2e/
+npm test
+```
+
+**Run with UI (interactive mode):**
+```bash
+cd e2e/
+npm run test:ui
+```
+
+**Note:** These tests focus on UI interactions and page loading. For comprehensive end-to-end workflow testing, use the backend E2E tests which provide full coverage of user journeys via API.
+
+## Expected Outcome
+
+When both servers are running, you should see:
+- Backend API documentation at: http://localhost:8000/docs
+- Frontend application at: http://localhost:4200
+- Message from backend: "Welcome to the HustleHub API"

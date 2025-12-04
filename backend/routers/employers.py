@@ -36,8 +36,8 @@ def get_my_employer_info(
     current_user: Users = Depends(get_user_from_token),
     db: Session = Depends(get_db)
 ):
-    if current_user.role not in ['employer', 'admin']:
-        raise HTTPException(status_code=403, detail="Only employers and admins can access this")
+    if current_user.role != 'employer':
+        raise HTTPException(status_code=403, detail="Only employers can access this")
     
     employer = db.query(Employers).filter(Employers.user_id == current_user.user_id).first()
     if not employer:
@@ -51,8 +51,8 @@ def create_employer_info(
     current_user: Users = Depends(get_user_from_token),
     db: Session = Depends(get_db)
 ):
-    if current_user.role not in ['employer', 'admin']:
-        raise HTTPException(status_code=403, detail="Only employers and admins can create company profiles")
+    if current_user.role != 'employer':
+        raise HTTPException(status_code=403, detail="Only employers can create company profiles")
     
     # Check if employer already exists
     existing = db.query(Employers).filter(Employers.user_id == current_user.user_id).first()
@@ -77,8 +77,8 @@ def update_employer_info(
     current_user: Users = Depends(get_user_from_token),
     db: Session = Depends(get_db)
 ):
-    if current_user.role not in ['employer', 'admin']:
-        raise HTTPException(status_code=403, detail="Only employers and admins can update company profiles")
+    if current_user.role != 'employer':
+        raise HTTPException(status_code=403, detail="Only employers can update company profiles")
     
     employer = db.query(Employers).filter(Employers.user_id == current_user.user_id).first()
     if not employer:

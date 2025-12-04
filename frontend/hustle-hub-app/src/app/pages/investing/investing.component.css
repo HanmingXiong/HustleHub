@@ -1,0 +1,259 @@
+.page-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 16px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+.resources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.resource-item {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s ease;
+}
+
+.resource-item:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.resource-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.resource-header h3 {
+  font-size: 20px;
+  margin: 0;
+  color: #333;
+}
+
+.like-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  background: #fff;
+  color: #666;
+}
+
+.like-btn:hover {
+  background: #f0f0f0;
+}
+
+.like-btn.liked {
+  background: #0056d2;
+  color: white;
+  border-color: #0056d2;
+}
+
+.like-btn.liked:hover {
+  background: #003f9e;
+}
+
+.resource-description {
+  color: #666;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.resource-link {
+  color: #0056d2;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.resource-link:hover {
+  text-decoration: underline;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.likes-count {
+  color: #666;
+  font-size: 14px;
+  padding: 8px 16px;
+}
+
+.edit-btn, .delete-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.edit-btn {
+  background: #fff;
+  color: #666;
+}
+
+.edit-btn:hover {
+  background: #f0f0f0;
+}
+
+.delete-btn {
+  background: #fff;
+  color: #d32f2f;
+}
+
+.delete-btn:hover {
+  background: #ffebee;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.btn-secondary, .btn-primary {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.btn-secondary {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.btn-secondary:hover {
+  background: #e0e0e0;
+}
+
+.btn-primary {
+  background: #0056d2;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #003f9e;
+}
+
+.delete-modal {
+  max-width: 450px;
+}
+
+.delete-modal p {
+  margin: 10px 0;
+  color: #666;
+  line-height: 1.6;
+}
+
+.delete-modal strong {
+  color: #333;
+}
+
+.warning-text {
+  color: #d32f2f;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-danger {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  background: #d32f2f;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #b71c1c;
+}

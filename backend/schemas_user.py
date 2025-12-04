@@ -24,7 +24,9 @@ class UserOut(UserBase):
 
 # Financial resource payloads
 class FinancialResourceCreate(BaseModel):
+    name: str
     website: str
+    description: str | None = None
     resource_type: Literal['credit', 'invest', 'budget']
 
     class Config:
@@ -32,8 +34,12 @@ class FinancialResourceCreate(BaseModel):
 
 class FinancialResourceRead(BaseModel):
     resource_id: int
+    name: str
     website: str
+    description: str | None
     resource_type: str
+    likes: int
+    user_has_liked: bool = False
     created_at: datetime
 
     class Config:
