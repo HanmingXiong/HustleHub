@@ -1,14 +1,12 @@
 <div class="container">
   
+  <!-- Toast notification -->
+  <div *ngIf="message" class="toast" [class.success]="messageType === 'success'" [class.error]="messageType === 'error'">
+    {{ message }}
+  </div>
+
   <header class="page-header">
     <h2>Available Jobs</h2>
-    
-    <button 
-      *ngIf="isEmployer" 
-      class="btn-primary create-job-btn"
-      (click)="navigateToCreateJob()">
-      + Post a Job
-    </button>
   </header>
 
   <div class="search-section">
@@ -53,9 +51,38 @@
         {{ job.description }}
       </p>
 
-      <button class="btn-secondary" (click)="navigateToApply(job.job_id)">
-        Apply Now
-      </button>
+      <div class="job-actions" *ngIf="!isEmployer">
+        <button 
+          *ngIf="!job.has_applied" 
+          class="btn-secondary" 
+          (click)="navigateToApply(job.job_id)">
+          Apply Now
+        </button>
+        <button 
+          *ngIf="job.has_applied" 
+          class="btn-applied" 
+          disabled>
+          ✓ Applied
+        </button>
+        <button 
+          *ngIf="job.has_applied" 
+          class="btn-withdraw" 
+          (click)="openWithdrawModal(job.job_id)">
+          Withdraw
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Withdraw Confirmation Modal -->
+  <div class="modal" *ngIf="showWithdrawModal" (click)="closeWithdrawModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Withdraw Application</h3>
+      <p>Are you sure you want to withdraw your application? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="closeWithdrawModal()">Cancel</button>
+        <button class="btn-danger" (click)="confirmWithdraw()">Withdraw Application</button>
+      </div>
     </div>
   </div>
 

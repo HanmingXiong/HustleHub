@@ -7,7 +7,7 @@
       <div class="avatar">{{ getInitials() }}</div>
       <div class="header-info">
         <h1>{{ getFullName() }}</h1>
-        <p>Employer Account</p>
+        <p>Administrator Account</p>
       </div>
       <button class="btn-edit" (click)="isEditMode = !isEditMode">
         {{ isEditMode ? 'Cancel' : 'Edit Profile' }}
@@ -79,6 +79,35 @@
       </form>
     </div>
 
+    <!-- Resume upload -->
+    <div class="card">
+      <h2>Resume</h2>
+      <div *ngIf="!user.resume_file" class="upload-area">
+        <p>📄 Upload your resume (optional)</p>
+        <label class="btn-upload">
+          <input type="file" accept=".pdf,.doc,.docx" (change)="onFileSelected($event)" style="display: none;">
+          {{ isUploadingResume ? 'Uploading...' : 'Choose File' }}
+        </label>
+        <small>PDF, DOC, or DOCX</small>
+      </div>
+      <div *ngIf="user.resume_file" class="resume-display">
+        <div class="resume-info">
+          <span class="resume-icon">📄</span>
+          <div>
+            <strong>{{ getResumeFileName() }}</strong>
+            <p>✓ Resume uploaded</p>
+          </div>
+        </div>
+        <div class="resume-actions">
+          <label class="btn-secondary">
+            <input type="file" accept=".pdf,.doc,.docx" (change)="onFileSelected($event)" style="display: none;">
+            Replace
+          </label>
+          <button class="btn-delete" (click)="deleteResume()">Delete</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Password change -->
     <div class="card">
       <h2>Change Password</h2>
@@ -114,39 +143,10 @@
       </button>
     </div>
 
-    <!-- Delete Account -->
-    <div class="card danger-zone">
-      <h2>Danger Zone</h2>
-      <p class="warning-text">Once you delete your account, there is no going back. Please be certain.</p>
-      <button class="btn-danger" (click)="openDeleteModal()">Delete Account</button>
-    </div>
-  </div>
-
-  <!-- Delete Account Modal -->
-  <div class="modal" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
-    <div class="modal-content danger-modal" (click)="$event.stopPropagation()">
-      <h3>⚠️ Delete Account</h3>
-      <p class="warning-text">
-        This action cannot be undone. All your data including company information and job postings will be permanently deleted.
-      </p>
-      <form (ngSubmit)="confirmDeleteAccount()">
-        <div class="form-group">
-          <label>Enter your password to confirm *</label>
-          <input 
-            type="password" 
-            [(ngModel)]="deletePassword" 
-            name="deletePassword" 
-            placeholder="Your password"
-            required
-            autofocus>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn-secondary" (click)="closeDeleteModal()">Cancel</button>
-          <button type="submit" class="btn-danger" [disabled]="isDeletingAccount">
-            {{ isDeletingAccount ? 'Deleting...' : 'Delete My Account' }}
-          </button>
-        </div>
-      </form>
+    <!-- Admin Info -->
+    <div class="card admin-info">
+      <h2>Administrator Access</h2>
+      <p class="info-text">You have full access to manage users, jobs, and system settings.</p>
     </div>
   </div>
 

@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
 
 @Component({
-  selector: 'app-employer-profile',
+  selector: 'app-admin-profile',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  templateUrl: './employer-profile.component.html',
-  styleUrl: './employer-profile.component.css'
+  templateUrl: './admin-profile.component.html',
+  styleUrl: './admin-profile.component.css'
 })
-export class EmployerProfileComponent implements OnInit {
+export class AdminProfileComponent implements OnInit {
   profileForm: FormGroup;
   companyForm: FormGroup;
   user: any = null;
@@ -20,11 +22,24 @@ export class EmployerProfileComponent implements OnInit {
   isSaving = false;
   isSavingCompany = false;
   isLoading = false;
+  isUploadingResume = false;
+  selectedFile: File | null = null;
   message = '';
   messageType: 'success' | 'error' = 'success';
+  
+  // Password change state
+  currentPassword = '';
+  newPassword = '';
+  confirmPassword = '';
+  isChangingPassword = false;
+  showCurrentPassword = false;
+  showNewPassword = false;
+  showConfirmPassword = false;
 
   constructor(
     private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
     private api: ApiService
   ) {
     this.profileForm = this.fb.group({
@@ -117,6 +132,54 @@ export class EmployerProfileComponent implements OnInit {
     }
   }
 
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const allowed = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!allowed.includes(file.type)) {
+        this.showMessage('Only PDF, DOC, DOCX allowed', 'error');
+        return;
+      }
+      this.selectedFile = file;
+      this.uploadResume();
+    }
+  }
+
+  uploadResume() {
+    if (!this.selectedFile) return;
+
+    this.isUploadingResume = true;
+    const formData = new FormData();
+    formData.append('file', this.selectedFile);
+
+    this.api.post('/profile/resume', formData).subscribe({
+      next: () => {
+        this.loadProfile();
+        this.selectedFile = null;
+        this.isUploadingResume = false;
+        this.showMessage('Resume uploaded!', 'success');
+      },
+      error: () => {
+        this.showMessage('Failed to upload resume', 'error');
+        this.isUploadingResume = false;
+      }
+    });
+  }
+
+  deleteResume() {
+    if (!confirm('Delete your resume?')) return;
+
+    this.api.delete('/profile/resume').subscribe({
+      next: () => {
+        this.user.resume_file = null;
+        this.showMessage('Resume deleted', 'success');
+      },
+      error: () => {
+        this.showMessage('Failed to delete resume', 'error');
+      }
+    });
+  }
+
   getInitials(): string {
     const first = this.user?.first_name?.charAt(0) || '';
     const last = this.user?.last_name?.charAt(0) || '';
@@ -128,20 +191,9 @@ export class EmployerProfileComponent implements OnInit {
     return fullName || this.user?.username || 'Loading...';
   }
 
-  // Password change state
-  currentPassword = '';
-  newPassword = '';
-  confirmPassword = '';
-  isChangingPassword = false;
-  showCurrentPassword = false;
-  showNewPassword = false;
-  showConfirmPassword = false;
-
-  // Delete account state
-  showDeleteModal = false;
-  deletePassword = '';
-  showDeletePassword = false;
-  isDeletingAccount = false;
+  getResumeFileName(): string {
+    return this.user?.resume_file?.split('/').pop() || '';
+  }
 
   changePassword() {
     if (!this.currentPassword || !this.newPassword || !this.confirmPassword) {
@@ -175,39 +227,6 @@ export class EmployerProfileComponent implements OnInit {
         const errorMsg = error.error?.detail || 'Failed to change password';
         this.showMessage(errorMsg, 'error');
         this.isChangingPassword = false;
-      }
-    });
-  }
-
-  openDeleteModal() {
-    this.showDeleteModal = true;
-    this.deletePassword = '';
-  }
-
-  closeDeleteModal() {
-    this.showDeleteModal = false;
-    this.deletePassword = '';
-  }
-
-  confirmDeleteAccount() {
-    if (!this.deletePassword) {
-      this.showMessage('Please enter your password', 'error');
-      return;
-    }
-
-    this.isDeletingAccount = true;
-    this.api.delete(`/profile/delete-account?password=${encodeURIComponent(this.deletePassword)}`).subscribe({
-      next: () => {
-        this.showMessage('Account deleted successfully', 'success');
-        setTimeout(() => {
-          window.location.href = '/auth';
-        }, 1500);
-      },
-      error: (error: any) => {
-        const errorMsg = error.error?.detail || 'Failed to delete account';
-        this.showMessage(errorMsg, 'error');
-        this.isDeletingAccount = false;
-        this.deletePassword = '';
       }
     });
   }

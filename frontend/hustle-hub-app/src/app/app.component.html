@@ -11,9 +11,14 @@
     <nav>
       <ng-container *ngIf="currentUser; else loggedOutNav">
         <a routerLink="/home">Home</a>
-        <a routerLink="/applications">Applications</a>
-        <ng-container *ngIf="currentUser?.role === 'employer'">
+        <ng-container *ngIf="currentUser?.role === 'applicant' || currentUser?.role === 'admin'">
+          <a routerLink="/applications">Applications</a>
+        </ng-container>
+        <ng-container *ngIf="currentUser?.role === 'employer' || currentUser?.role === 'admin'">
           <a routerLink="/employer/dashboard">Postings</a>
+        </ng-container>
+        <ng-container *ngIf="currentUser?.role === 'admin'">
+          <a routerLink="/admin/dashboard">Admin</a>
         </ng-container>
         <a routerLink="/financial-literacy">Financial</a>
         <a [routerLink]="getProfileRoute()">Profile</a>

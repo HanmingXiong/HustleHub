@@ -17,8 +17,11 @@ def get_db():
         db.close()
 
 @router.get("/", response_model=List[schemas_job.JobCard])
-def read_jobs(db: Session = Depends(get_db)):
-    # Return active jobs enriched with employer info
+def read_jobs(
+    db: Session = Depends(get_db),
+    current_user: models.Users = Depends(get_user_from_token)
+):
+    # Return active jobs enriched with employer info and application status
     jobs_query = (
         db.query(models.Jobs)
         .join(models.Employers)
@@ -26,6 +29,12 @@ def read_jobs(db: Session = Depends(get_db)):
         .order_by(models.Jobs.date_posted.desc())
         .all()
     )
+    
+    # Get user's applications
+    user_applications = db.query(models.Applications.job_id).filter(
+        models.Applications.user_id == current_user.user_id
+    ).all()
+    applied_job_ids = {app.job_id for app in user_applications}
     
     results = []
     for job in jobs_query:
@@ -39,7 +48,8 @@ def read_jobs(db: Session = Depends(get_db)):
             location=job.location,
             pay_range=job.pay_range,
             date_posted=job.date_posted,
-            is_active=job.is_active
+            is_active=job.is_active,
+            has_applied=job.job_id in applied_job_ids
         ))
         
     return results
@@ -49,9 +59,9 @@ def create_job(job_data: schemas_job.JobCreate,
                db: Session = Depends(get_db), 
                current_user: models.Users = Depends(get_user_from_token)):
     
-    # Allow employers to create a new job posting
-    if current_user.role != 'employer':
-        raise HTTPException(status_code=403, detail="Only employers can post jobs")
+    # Allow employers and admins to create a new job posting
+    if current_user.role not in ['employer', 'admin']:
+        raise HTTPException(status_code=403, detail="Only employers and admins can post jobs")
 
     employer_profile = db.query(models.Employers).filter(models.Employers.user_id == current_user.user_id).first()
     
@@ -100,6 +110,10 @@ def apply_for_job(job_id: int,
                   current_user: models.Users = Depends(get_user_from_token)):
 
     # Submit an application for a specific job
+    # Block employers from applying to jobs
+    if current_user.role == 'employer':
+        raise HTTPException(status_code=403, detail="Employers cannot apply to jobs")
+    
     # Block duplicate applications from the same user
     existing_app = db.query(models.Applications).filter(
         models.Applications.job_id == job_id,
@@ -144,14 +158,58 @@ def get_my_applications(
 
     return applications
 
+@router.get("/employer/jobs", response_model=List[schemas_job.JobCard])
+def get_employer_jobs(
+    db: Session = Depends(get_db),
+    current_user: models.Users = Depends(get_user_from_token)
+):
+    # Get all jobs posted by the employer (both active and inactive)
+    if current_user.role not in ['employer', 'admin']:
+        raise HTTPException(status_code=403, detail="Only employers and admins can access this")
+    
+    employer_profile = db.query(models.Employers).filter(models.Employers.user_id == current_user.user_id).first()
+    if not employer_profile:
+        raise HTTPException(status_code=404, detail="Employer profile not found")
+    
+    jobs = (
+        db.query(models.Jobs)
+        .join(models.Employers)
+        .filter(models.Employers.employer_id == employer_profile.employer_id)
+        .order_by(models.Jobs.date_posted.desc())
+        .all()
+    )
+    
+    results = []
+    for job in jobs:
+        # Count applications for this job
+        application_count = db.query(models.Applications).filter(
+            models.Applications.job_id == job.job_id
+        ).count()
+        
+        results.append(schemas_job.JobCard(
+            job_id=job.job_id,
+            employer_id=job.employer_id,
+            company_name=job.employer.company_name,
+            title=job.title,
+            description=job.description,
+            job_type=job.job_type,
+            location=job.location,
+            pay_range=job.pay_range,
+            date_posted=job.date_posted,
+            is_active=job.is_active,
+            application_count=application_count
+        ))
+    
+    return results
+
 @router.get("/employer/applications", response_model=List[schemas_job.EmployerApplicationRead])
 def get_employer_applications(
     db: Session = Depends(get_db),
     current_user: models.Users = Depends(get_user_from_token)
 ):
     # Employer view: applications across jobs they own
-    if current_user.role != 'employer':
-        raise HTTPException(status_code=403, detail="Only employers can access this")
+    if current_user.role not in ['employer', 'admin']:
+        raise HTTPException(status_code=403, detail="Only employers and admins can access this")
         
     # Employer view: applications across jobs they own
     results = (
@@ -159,6 +217,7 @@ def get_employer_applications(
             models.Applications.application_id,
             models.Users.username.label("applicant_name"),
             models.Users.email.label("applicant_email"),
+            models.Users.user_id.label("applicant_user_id"),
             models.Users.resume_file,
             models.Jobs.title.label("job_title"),
             models.Applications.cover_letter,
@@ -175,6 +234,97 @@ def get_employer_applications(
 
     return results
 
+@router.get("/employer/applications/{job_id}", response_model=List[schemas_job.EmployerApplicationRead])
+def get_employer_applications_for_job(
+    job_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.Users = Depends(get_user_from_token)
+):
+    # Employer view: applications for a specific job
+    if current_user.role not in ['employer', 'admin']:
+        raise HTTPException(status_code=403, detail="Only employers and admins can access this")
+    
+    # Verify job ownership
+    job = (
+        db.query(models.Jobs)
+        .join(models.Employers)
+        .filter(models.Jobs.job_id == job_id)
+        .filter(models.Employers.user_id == current_user.user_id)
+        .first()
+    )
+    
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found or you don't have permission")
+    
+    # Get applications for this specific job
+    results = (
+        db.query(
+            models.Applications.application_id,
+            models.Users.username.label("applicant_name"),
+            models.Users.email.label("applicant_email"),
+            models.Users.user_id.label("applicant_user_id"),
+            models.Users.resume_file,
+            models.Jobs.title.label("job_title"),
+            models.Applications.cover_letter,
+            models.Applications.status,
+            models.Applications.date_applied
+        )
+        .join(models.Users, models.Applications.user_id == models.Users.user_id)
+        .join(models.Jobs, models.Applications.job_id == models.Jobs.job_id)
+        .filter(models.Applications.job_id == job_id)
+        .order_by(models.Applications.date_applied.desc())
+        .all()
+    )
+
+    return results
+
+@router.put("/{job_id}/toggle-active")
+def toggle_job_active(
+    job_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.Users = Depends(get_user_from_token)
+):
+    # Toggle job active status (only for job owner)
+    if current_user.role not in ['employer', 'admin']:
+        raise HTTPException(status_code=403, detail="Only employers and admins can manage jobs")
+    
+    # Verify job ownership
+    job = (
+        db.query(models.Jobs)
+        .join(models.Employers)
+        .filter(models.Jobs.job_id == job_id)
+        .filter(models.Employers.user_id == current_user.user_id)
+        .first()
+    )
+    
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found or you don't have permission")
+    
+    job.is_active = not job.is_active
+    db.commit()
+    
+    return {"message": "Job status updated", "is_active": job.is_active}
+
+@router.delete("/applications/withdraw/{job_id}")
+def withdraw_application(
+    job_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.Users = Depends(get_user_from_token)
+):
+    # Allow applicants to withdraw their application
+    application = db.query(models.Applications).filter(
+        models.Applications.job_id == job_id,
+        models.Applications.user_id == current_user.user_id
+    ).first()
+    
+    if not application:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    db.delete(application)
+    db.commit()
+    
+    return {"message": "Application withdrawn successfully"}
+
 @router.put("/applications/{application_id}/status")
 def update_application_status(
     application_id: int,
@@ -182,9 +332,9 @@ def update_application_status(
     db: Session = Depends(get_db),
     current_user: models.Users = Depends(get_user_from_token)
 ):
-    # Allow employers to change an application's status
-    if current_user.role != 'employer':
-        raise HTTPException(status_code=403, detail="Only employers can update status")
+    # Allow employers and admins to change an application's status
+    if current_user.role not in ['employer', 'admin']:
+        raise HTTPException(status_code=403, detail="Only employers and admins can update status")
 
     valid_statuses = ["pending", "reviewed", "accepted", "rejected"]
     if status_update.status not in valid_statuses:

@@ -1,53 +1,261 @@
 <div class="container">
-    <h2>Applicant Dashboard</h2>
-  
-    <div *ngIf="message" class="success-msg">{{ message }}</div>
-  
-    <div *ngIf="isLoading">Loading applicants...</div>
-  
-    <div *ngIf="!isLoading && applicants.length === 0" class="empty-state">
-      <p>No applications received yet.</p>
+    <!-- Toast notification -->
+    <div *ngIf="message" class="toast" [class.success]="messageType === 'success'" [class.error]="messageType === 'error'">
+      {{ message }}
     </div>
-  
-    <div class="table-responsive" *ngIf="applicants.length > 0">
-      <table>
-        <thead>
-          <tr>
-            <th>Candidate</th>
-            <th>Applied For</th>
-            <th>Cover Letter</th>
-            <th>Date</th>
-            <th>Status / Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let app of applicants">
-            <td>
-              <div class="candidate-info">
-                <strong>{{ app.applicant_name }}</strong>
-                <span>{{ app.applicant_email }}</span>
-                <a *ngIf="app.resume_file" href="#" class="resume-link">View Resume</a>
-              </div>
-            </td>
-            <td>{{ app.job_title }}</td>
-            <td>
-              <div class="cover-letter" title="{{ app.cover_letter }}">
-                {{ app.cover_letter | slice:0:50 }}...
-              </div>
-            </td>
-            <td>{{ app.date_applied | date:'shortDate' }}</td>
-            <td>
-              <select 
-                [ngModel]="app.status" 
-                (ngModelChange)="updateStatus(app, $event)"
-                [ngClass]="app.status">
-                <option *ngFor="let s of statuses" [value]="s">
-                  {{ s | titlecase }}
-                </option>
-              </select>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+
+    <!-- Header with title and Post Job button -->
+    <div class="page-header">
+      <h2>Employer Dashboard</h2>
+      <button 
+        class="btn-primary"
+        [disabled]="!hasCompanyInfo"
+        [class.disabled]="!hasCompanyInfo"
+        (click)="openCreateJobModal()">
+        + Post a Job
+      </button>
+    </div>
+
+    <!-- Warning banner for employers without company info -->
+    <div *ngIf="!hasCompanyInfo" class="warning-banner">
+      <span class="warning-icon">⚠️</span>
+      <div class="warning-content">
+        <strong>Complete Your Company Profile</strong>
+        <p>You need to add your company information before you can post jobs.</p>
+      </div>
+      <button class="btn-warning-action" (click)="navigateToProfile()">
+        Complete Profile
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button 
+        [class.active]="activeTab === 'applications'" 
+        (click)="activeTab = 'applications'">
+        Recent Applications
+      </button>
+      <button 
+        [class.active]="activeTab === 'jobs'" 
+        (click)="activeTab = 'jobs'">
+        My Jobs
+      </button>
+    </div>
+
+    <!-- Applications Tab -->
+    <div *ngIf="activeTab === 'applications'">
+      <div *ngIf="isLoading">Loading applicants...</div>
+    
+      <div *ngIf="!isLoading && applicants.length === 0" class="empty-state">
+        <p>No applications received yet.</p>
+      </div>
+    
+      <div class="table-responsive" *ngIf="applicants.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th>Candidate</th>
+              <th>Applied For</th>
+              <th>Cover Letter</th>
+              <th>Date</th>
+              <th>Status / Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let app of applicants">
+              <td>
+                <div class="candidate-info">
+                  <strong>{{ app.applicant_name }}</strong>
+                  <span>{{ app.applicant_email }}</span>
+                  <a *ngIf="app.resume_file" 
+                     (click)="downloadResume(app.applicant_user_id, app.applicant_name)" 
+                     class="resume-link">
+                    📄 View Resume
+                  </a>
+                  <span *ngIf="!app.resume_file" class="no-resume">No resume</span>
+                </div>
+              </td>
+              <td>{{ app.job_title }}</td>
+              <td>
+                <div class="cover-letter" title="{{ app.cover_letter }}">
+                  {{ app.cover_letter | slice:0:50 }}...
+                </div>
+              </td>
+              <td>{{ app.date_applied | date:'shortDate' }}</td>
+              <td>
+                <select 
+                  [ngModel]="app.status" 
+                  (ngModelChange)="updateStatus(app, $event)"
+                  [ngClass]="app.status">
+                  <option *ngFor="let s of statuses" [value]="s">
+                    {{ s | titlecase }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Jobs Tab -->
+    <div *ngIf="activeTab === 'jobs'">
+      <div *ngIf="isLoadingJobs">Loading jobs...</div>
+    
+      <div *ngIf="!isLoadingJobs && jobs.length === 0" class="empty-state">
+        <p>No jobs posted yet.</p>
+      </div>
+    
+      <div class="table-responsive" *ngIf="jobs.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th>Job Title</th>
+              <th>Type</th>
+              <th>Location</th>
+              <th>Pay Range</th>
+              <th>Posted</th>
+              <th>Candidates</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let job of jobs" [class.inactive]="!job.is_active">
+              <td>
+                <strong>{{ job.title }}</strong>
+                <div class="job-description">{{ job.description | slice:0:60 }}...</div>
+              </td>
+              <td>{{ job.job_type }}</td>
+              <td>{{ job.location }}</td>
+              <td>{{ job.pay_range }}</td>
+              <td>{{ job.date_posted | date:'shortDate' }}</td>
+              <td>
+                <button 
+                  class="btn-candidates" 
+                  (click)="openCandidatesModal(job.job_id, job.title)"
+                  [disabled]="job.application_count === 0">
+                  <span class="count-badge">{{ job.application_count }}</span>
+                  See Candidates
+                </button>
+              </td>
+              <td>
+                <span class="status-badge" [class.active]="job.is_active" [class.inactive]="!job.is_active">
+                  {{ job.is_active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <button 
+                  class="btn-toggle" 
+                  [class.deactivate]="job.is_active"
+                  [class.activate]="!job.is_active"
+                  (click)="toggleJobActive(job)">
+                  {{ job.is_active ? 'Deactivate' : 'Activate' }}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!
+-- Create Job Modal -->
+  <div class="modal" *ngIf="showCreateJobModal" (click)="closeCreateJobModal()">
+    <div class="modal-content create-job-modal" (click)="$event.stopPropagation()">
+      <h3>Post a New Job</h3>
+      <form (ngSubmit)="createJob()">
+        <div class="form-group">
+          <label>Job Title *</label>
+          <input type="text" [(ngModel)]="newJob.title" name="title" required placeholder="e.g. Junior Developer">
+        </div>
+
+        <div class="form-group">
+          <label>Location *</label>
+          <input type="text" [(ngModel)]="newJob.location" name="location" required placeholder="e.g. Remote, New York">
+        </div>
+
+        <div class="form-group">
+          <label>Job Type</label>
+          <select [(ngModel)]="newJob.job_type" name="job_type">
+            <option value="full-time">Full-time</option>
+            <option value="part-time">Part-time</option>
+            <option value="gig">Gig / Contract</option>
+            <option value="temporary">Temporary</option>
+            <option value="internship">Internship</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Pay Range</label>
+          <input type="text" [(ngModel)]="newJob.pay_range" name="pay" placeholder="e.g. $60k - $80k">
+        </div>
+
+        <div class="form-group">
+          <label>Description *</label>
+          <textarea [(ngModel)]="newJob.description" name="description" rows="5" required placeholder="Describe the job responsibilities, requirements, and benefits..."></textarea>
+        </div>
+
+        <div class="warning-info">
+          ⚠️ Note: Job details cannot be edited after posting. Please review carefully before submitting.
+        </div>
+
+        <div *ngIf="jobError" class="error-msg">{{ jobError }}</div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeCreateJobModal()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="isCreatingJob">
+            {{ isCreatingJob ? 'Posting...' : 'Post Job' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Candidates Modal -->
+  <div class="modal" *ngIf="showCandidatesModal" (click)="closeCandidatesModal()">
+    <div class="modal-content candidates-modal" (click)="$event.stopPropagation()">
+      <h3>Candidates for: {{ selectedJobTitle }}</h3>
+      
+      <div *ngIf="candidatesForJob.length === 0" class="empty-state">
+        <p>No applications yet for this job.</p>
+      </div>
+
+      <div class="candidates-list" *ngIf="candidatesForJob.length > 0">
+        <div class="candidate-card" *ngFor="let app of candidatesForJob">
+          <div class="candidate-header">
+            <div class="candidate-info">
+              <strong>{{ app.applicant_name }}</strong>
+              <span>{{ app.applicant_email }}</span>
+              <a *ngIf="app.resume_file" 
+                 (click)="downloadResume(app.applicant_user_id, app.applicant_name)" 
+                 class="resume-link">
+                📄 View Resume
+              </a>
+              <span *ngIf="!app.resume_file" class="no-resume">No resume</span>
+            </div>
+            <select 
+              [ngModel]="app.status" 
+              (ngModelChange)="updateStatus(app, $event)"
+              [ngClass]="app.status"
+              class="status-select">
+              <option *ngFor="let s of statuses" [value]="s">
+                {{ s | titlecase }}
+              </option>
+            </select>
+          </div>
+          
+          <div class="candidate-details">
+            <div class="detail-label">Cover Letter:</div>
+            <div class="cover-letter-full">{{ app.cover_letter }}</div>
+            <div class="detail-label">Applied:</div>
+            <div>{{ app.date_applied | date:'medium' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeCandidatesModal()">Close</button>
+      </div>
     </div>
   </div>

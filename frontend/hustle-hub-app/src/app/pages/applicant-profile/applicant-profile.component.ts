@@ -32,6 +32,12 @@ export class ApplicantProfileComponent implements OnInit {
   showNewPassword = false;
   showConfirmPassword = false;
 
+  // Delete account state
+  showDeleteModal = false;
+  deletePassword = '';
+  showDeletePassword = false;
+  isDeletingAccount = false;
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -179,6 +185,41 @@ export class ApplicantProfileComponent implements OnInit {
         const errorMsg = error.error?.detail || 'Failed to change password';
         this.showMessage(errorMsg, 'error');
         this.isChangingPassword = false;
+      }
+    });
+  }
+
+  openDeleteModal() {
+    this.showDeleteModal = true;
+    this.deletePassword = '';
+  }
+
+  closeDeleteModal() {
+    this.showDeleteModal = false;
+    this.deletePassword = '';
+  }
+
+  confirmDeleteAccount() {
+    if (!this.deletePassword) {
+      this.showMessage('Please enter your password', 'error');
+      return;
+    }
+
+    this.isDeletingAccount = true;
+    this.api.delete(`/profile/delete-account?password=${encodeURIComponent(this.deletePassword)}`).subscribe({
+      next: () => {
+        this.showMessage('Account deleted successfully', 'success');
+        setTimeout(() => {
+          this.authService.logout().subscribe(() => {
+            this.router.navigate(['/auth']);
+          });
+        }, 1500);
+      },
+      error: (error: any) => {
+        const errorMsg = error.error?.detail || 'Failed to delete account';
+        this.showMessage(errorMsg, 'error');
+        this.isDeletingAccount = false;
+        this.deletePassword = '';
       }
     });
   }

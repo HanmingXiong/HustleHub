@@ -6,7 +6,7 @@ from datetime import datetime
 import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
-from routers import auth, financial_resource, jobs, jobs, profile
+from routers import auth, financial_resource, jobs, profile, employers, admin
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -30,7 +30,8 @@ app.include_router(auth.router)
 app.include_router(financial_resource.router)
 app.include_router(profile.router)
 app.include_router(jobs.router)
-app.include_router(profile.router)
+app.include_router(employers.router)
+app.include_router(admin.router)
 
 def get_db():
     # Provide a DB session per request

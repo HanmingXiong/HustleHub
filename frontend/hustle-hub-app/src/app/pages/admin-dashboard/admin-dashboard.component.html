@@ -1,0 +1,213 @@
+<div class="container">
+  <h2>Admin Dashboard</h2>
+
+  <div *ngIf="message" class="toast" [class.success]="messageType === 'success'" [class.error]="messageType === 'error'">
+    {{ message }}
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">
+      Users Management
+    </button>
+    <button [class.active]="activeTab === 'jobs'" (click)="activeTab = 'jobs'">
+      Jobs Management
+    </button>
+  </div>
+
+  <!-- Users Tab -->
+  <div *ngIf="activeTab === 'users'">
+    <div class="header-actions">
+      <button class="btn-primary" (click)="openAddUserModal()">+ Add User</button>
+    </div>
+
+    <div *ngIf="isLoadingUsers">Loading users...</div>
+
+    <div *ngIf="!isLoadingUsers && users.length === 0" class="empty-state">
+      <p>No users found.</p>
+    </div>
+
+    <div class="table-responsive" *ngIf="users.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Created</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{ user.user_id }}</td>
+            <td><strong>{{ user.username }}</strong></td>
+            <td>{{ user.email }}</td>
+            <td>
+              <span class="role-badge" [class]="user.role">
+                {{ user.role }}
+              </span>
+            </td>
+            <td>{{ user.first_name || '' }} {{ user.last_name || '' }}</td>
+            <td>{{ user.phone || '-' }}</td>
+            <td>{{ user.created_at | date:'short' }}</td>
+            <td>
+              <button 
+                *ngIf="user.role !== 'admin'"
+                class="btn-delete" 
+                (click)="openDeleteUserModal(user.user_id, user.username)">
+                Delete
+              </button>
+              <span *ngIf="user.role === 'admin' && user.user_id === currentUserId" class="current-user-badge">
+                You
+              </span>
+              <span *ngIf="user.role === 'admin' && user.user_id !== currentUserId" class="protected-badge">
+                Protected
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Jobs Tab -->
+  <div *ngIf="activeTab === 'jobs'">
+    <div *ngIf="isLoadingJobs">Loading jobs...</div>
+
+    <div *ngIf="!isLoadingJobs && jobs.length === 0" class="empty-state">
+      <p>No jobs found.</p>
+    </div>
+
+    <div class="table-responsive" *ngIf="jobs.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Company</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Pay Range</th>
+            <th>Status</th>
+            <th>Posted</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let job of jobs">
+            <td>{{ job.job_id }}</td>
+            <td>
+              <strong>{{ job.title }}</strong>
+              <div class="job-description">{{ job.description | slice:0:60 }}...</div>
+            </td>
+            <td>{{ job.company_name }}</td>
+            <td>{{ job.job_type }}</td>
+            <td>{{ job.location }}</td>
+            <td>{{ job.pay_range || '-' }}</td>
+            <td>
+              <span class="status-badge" [class.active]="job.is_active" [class.inactive]="!job.is_active">
+                {{ job.is_active ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td>{{ job.date_posted | date:'short' }}</td>
+            <td>
+              <button class="btn-delete" (click)="openDeleteJobModal(job.job_id, job.title)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add User Modal -->
+  <div class="modal" *ngIf="showAddUserModal" (click)="closeAddUserModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Add New User</h3>
+      <form (ngSubmit)="addUser()">
+        <div class="form-group">
+          <label>Username *</label>
+          <input [(ngModel)]="newUser.username" name="username" required>
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" [(ngModel)]="newUser.email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label>Password *</label>
+          <input type="password" [(ngModel)]="newUser.password" name="password" required>
+        </div>
+        <div class="form-group">
+          <label>Role *</label>
+          <select [(ngModel)]="newUser.role" name="role" required>
+            <option value="applicant">Applicant</option>
+            <option value="employer">Employer</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeAddUserModal()">Cancel</button>
+          <button type="submit" class="btn-primary">Create User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+  <!-- Password Verification Modal -->
+  <div class="modal" *ngIf="showPasswordVerifyModal" (click)="cancelPasswordVerify()">
+    <div class="modal-content warning-modal" (click)="$event.stopPropagation()">
+      <h3>⚠️ Admin Account Creation</h3>
+      <p class="warning-text">
+        You are creating an admin account with full system access.
+        <strong>Admin accounts cannot be deleted by other admins.</strong>
+      </p>
+      <form (ngSubmit)="confirmAdminCreation()">
+        <div class="form-group">
+          <label>Enter YOUR admin password to confirm *</label>
+          <input 
+            type="password" 
+            [(ngModel)]="adminPassword" 
+            name="adminPassword" 
+            placeholder="Your admin password"
+            required
+            autofocus>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="cancelPasswordVerify()">Cancel</button>
+          <button type="submit" class="btn-primary">Confirm & Create Admin</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal" *ngIf="showDeleteConfirmModal" (click)="closeDeleteConfirmModal()">
+    <div class="modal-content danger-modal" (click)="$event.stopPropagation()">
+      <h3>⚠️ Confirm Deletion</h3>
+      <p class="warning-text">
+        You are about to delete {{ deleteTargetName }}. This action cannot be undone.
+      </p>
+      <form (ngSubmit)="confirmDelete()">
+        <div class="form-group">
+          <label>Enter your admin password to confirm *</label>
+          <input 
+            type="password" 
+            [(ngModel)]="deletePassword" 
+            name="deletePassword" 
+            placeholder="Your admin password"
+            required
+            autofocus>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeDeleteConfirmModal()">Cancel</button>
+          <button type="submit" class="btn-danger">Confirm Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>

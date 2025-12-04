@@ -6,37 +6,23 @@ import { BudgetingComponent } from './pages/budgeting/budgeting.component';
 import { InvestingComponent } from './pages/investing/investing.component';
 import { ApplicantProfileComponent } from './pages/applicant-profile/applicant-profile.component';
 import { EmployerProfileComponent } from './pages/employer-profile/employer-profile.component';
+import { AdminProfileComponent } from './pages/admin-profile/admin-profile.component';
 import { AuthComponent } from './pages/auth/auth.component';
-import { CreateJobComponent } from './pages/create-job/create-job.component';
 import { ApplyJobComponent } from './pages/apply-job/apply-job.component';
 import { ApplicationsComponent } from './pages/applications/applications.component';
-import { EmployerDashboardComponent } from './pages/employer-dashboard/employer-dashboard.component'
+import { EmployerDashboardComponent } from './pages/employer-dashboard/employer-dashboard.component';
+import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
+import { authGuard, guestGuard } from './guards/auth.guard';
+import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
-    { 
-        path: 'home', 
-        component: HomeComponent 
-    },
-
+    // Public routes (no auth required)
     {
-        path: 'create-job',
-        component: CreateJobComponent 
+        path: 'auth',
+        component: AuthComponent,
+        canActivate: [guestGuard]
     },
     
-    {
-        path: 'apply/:id', 
-        component: ApplyJobComponent
-    },
-    {
-        path: 'applications',
-        component: ApplicationsComponent
-    },
-
-    {
-        path: 'employer/dashboard',
-        component: EmployerDashboardComponent
-    },
-
     {
         path: 'financial-literacy',
         component: FinancialLiteracyComponent
@@ -57,24 +43,60 @@ export const routes: Routes = [
         component: InvestingComponent
     },
 
+    // Protected routes (auth required)
+    { 
+        path: 'home', 
+        component: HomeComponent,
+        canActivate: [authGuard]
+    },
+    
     {
-        path: 'auth',
-        component: AuthComponent
+        path: 'apply/:id', 
+        component: ApplyJobComponent,
+        canActivate: [authGuard]
+    },
+    
+    {
+        path: 'applications',
+        component: ApplicationsComponent,
+        canActivate: [authGuard, roleGuard],
+        data: { role: ['applicant', 'admin'] }
+    },
+
+    {
+        path: 'employer/dashboard',
+        component: EmployerDashboardComponent,
+        canActivate: [authGuard, roleGuard],
+        data: { role: ['employer', 'admin'] }
+    },
+
+    {
+        path: 'admin/dashboard',
+        component: AdminDashboardComponent,
+        canActivate: [authGuard, roleGuard],
+        data: { role: 'admin' }
     },
     
     // Role-based profile screens
     { 
         path: 'profile/applicant', 
-        component: ApplicantProfileComponent 
+        component: ApplicantProfileComponent,
+        canActivate: [authGuard, roleGuard],
+        data: { role: 'applicant' }
     },
     { 
         path: 'profile/employer', 
-        component: EmployerProfileComponent 
+        component: EmployerProfileComponent,
+        canActivate: [authGuard, roleGuard],
+        data: { role: 'employer' }
     },
     { 
         path: 'profile/admin', 
-        component: EmployerProfileComponent
+        component: AdminProfileComponent,
+        canActivate: [authGuard, roleGuard],
+        data: { role: 'admin' }
     },
+    
     // Legacy profile route fallback
     { 
         path: 'profile', 
