@@ -236,6 +236,7 @@ def test_create_financial_resource_requires_admin(client):
     setup_applicant(client)
     
     resource_data = {
+        "name": "Test Resource",
         "website": "https://example.com",
         "resource_type": "credit"
     }
@@ -249,6 +250,7 @@ def test_create_financial_resource_employer_forbidden(client):
     setup_employer(client)
     
     resource_data = {
+        "name": "Test Resource",
         "website": "https://example.com",
         "resource_type": "credit"
     }

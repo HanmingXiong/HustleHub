@@ -155,28 +155,24 @@ The backend has three types of tests:
 cd backend/
 pytest -m unit
 ```
-Expected: ~9 tests pass
 
 **Integration Tests** - Test API endpoints with database
 ```bash
 cd backend/
 pytest -m integration
 ```
-Expected: ~140 tests pass
 
 **E2E Tests (Backend)** - Test complete user workflows via API
 ```bash
 cd backend/
 pytest -m e2e
 ```
-Expected: 8 tests pass, 2 skipped
 
 **Run All Backend Tests**
 ```bash
 cd backend/
 pytest
 ```
-Expected: 157 tests pass, 2 skipped
 
 **Run with Coverage**
 ```bash
@@ -194,7 +190,6 @@ Run Angular unit tests:
 cd frontend/hustle-hub-app/
 ng test
 ```
-Expected: 13 tests pass
 
 Run tests once (no watch mode):
 

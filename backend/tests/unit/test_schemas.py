@@ -69,10 +69,12 @@ def test_financial_resource_schema():
     from schemas_user import FinancialResourceCreate
     
     resource = FinancialResourceCreate(
+        name="Credit Karma",
         website="https://example.com",
         resource_type="credit"
     )
     
+    assert resource.name == "Credit Karma"
     assert resource.website == "https://example.com"
     assert resource.resource_type == "credit"
 
@@ -83,6 +85,7 @@ def test_financial_resource_invalid_type():
     
     with pytest.raises(ValidationError):
         FinancialResourceCreate(
+            name="Test Resource",
             website="https://example.com",
             resource_type="invalid"
         )

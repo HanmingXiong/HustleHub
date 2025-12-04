@@ -1,5 +1,60 @@
-<h1>Investing Resources</h1>
+<div class="page-container">
+  <h1>Investing Resources</h1>
+  <p class="subtitle">Beginner-friendly investing guides and calculators</p>
 
-<div *ngFor="let r of resources" class="resource-card">
-  <p><strong>Website:</strong> {{ r.website }}</p>
+  <div *ngIf="resources.length === 0" class="empty-state">
+    <p>No resources available yet.</p>
+  </div>
+
+  <div class="resources-list">
+    <div *ngFor="let r of resources" class="resource-item">
+      <div class="resource-header">
+        <h3>{{ r.name }}</h3>
+        <div *ngIf="isAdmin" class="action-buttons">
+          <button class="edit-btn" (click)="editResource(r)">Edit</button>
+          <button class="delete-btn" (click)="deleteResource(r.resource_id, r.name)">Delete</button>
+        </div>
+      </div>
+      <p class="resource-description" *ngIf="r.description">{{ r.description }}</p>
+      <a [href]="r.website" target="_blank" class="resource-link">
+        Visit Resource →
+      </a>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div *ngIf="editingResource" class="modal" (click)="cancelEdit()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Edit Resource</h3>
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="editingResource.name" />
+      </div>
+      <div class="form-group">
+        <label>Website</label>
+        <input type="text" [(ngModel)]="editingResource.website" />
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea [(ngModel)]="editingResource.description" rows="3"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+        <button class="btn-primary" (click)="saveEdit()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="showDeleteModal" class="modal" (click)="closeDeleteModal()">
+    <div class="modal-content delete-modal" (click)="$event.stopPropagation()">
+      <h3>Delete Resource</h3>
+      <p>Are you sure you want to delete <strong>"{{ resourceToDelete?.name }}"</strong>?</p>
+      <p class="warning-text">This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="closeDeleteModal()">Cancel</button>
+        <button class="btn-danger" (click)="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
 </div>

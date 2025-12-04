@@ -103,11 +103,29 @@ class FinancialResources(Base):
     __tablename__ = 'financial_resources'
 
     resource_id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(200), nullable=False)
     website = Column(String(255), nullable=False)
+    description = Column(Text)
     resource_type = Column(String(50), nullable=False)
+    likes = Column(Integer, default=0)
     created_at = Column(TIMESTAMP, default=func.current_timestamp())
 
     __table_args__ = (
         CheckConstraint("resource_type IN ('credit', 'budget', 'invest')", name='financial_resources_type_check'),
         Index('idx_financial_resources_type', 'resource_type'),
+    )
+
+class ResourceLikes(Base):
+    __tablename__ = 'resource_likes'
+
+    like_id = Column(Integer, primary_key=True, autoincrement=True)
+    resource_id = Column(Integer, ForeignKey('financial_resources.resource_id', ondelete='CASCADE'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.user_id', ondelete='CASCADE'), nullable=False)
+    created_at = Column(TIMESTAMP, default=func.current_timestamp())
+
+    __table_args__ = (
+        Index('idx_resource_likes_resource', 'resource_id'),
+        Index('idx_resource_likes_user', 'user_id'),
+        # Ensure a user can only like a resource once
+        {'sqlite_autoincrement': True},
     )

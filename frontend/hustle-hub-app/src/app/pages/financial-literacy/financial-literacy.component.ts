@@ -11,7 +11,9 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./financial-literacy.component.css']
 })
 export class FinancialLiteracyComponent {
+  name = '';
   website = '';
+  description = '';
   resource_type: 'budget' | 'credit' | 'invest' = 'budget';
   message = '';
   isAdmin = false;
@@ -27,17 +29,24 @@ export class FinancialLiteracyComponent {
   }
 
   createResource() {
-    if (!this.website || !this.resource_type) {
-      this.message = 'Website and type are required';
+    if (!this.name || !this.website || !this.resource_type) {
+      this.message = 'Name, website and type are required';
       return;
     }
 
-    const body = { website: this.website, resource_type: this.resource_type };
+    const body = { 
+      name: this.name,
+      website: this.website, 
+      description: this.description || null,
+      resource_type: this.resource_type 
+    };
     this.http.post('http://localhost:8000/financial-literacy', body, { withCredentials: true })
       .subscribe({
         next: () => {
           this.message = 'Resource created successfully!';
+          this.name = '';
           this.website = '';
+          this.description = '';
           this.resource_type = 'budget';
         },
         error: err => this.message = 'Error: ' + (err.error?.detail || 'Unknown error')

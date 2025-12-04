@@ -23,10 +23,10 @@ class JobCard(BaseModel):
 # Incoming payload to create a job posting
 class JobCreate(BaseModel):
     title: str
-    description: str
-    job_type: str
-    location: str
-    pay_range: Optional[str]
+    description: Optional[str] = None
+    job_type: Optional[str] = None
+    location: Optional[str] = None
+    pay_range: Optional[str] = None
 
 # Applicant submits cover letter when applying
 class ApplicationCreate(BaseModel):
