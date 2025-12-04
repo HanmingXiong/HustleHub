@@ -150,19 +150,19 @@ Then restart the server to recreate tables automatically.
 
 The backend has three types of tests:
 
-**Unit Tests** - Fast, isolated tests for individual functions
+**Unit Tests**
 ```bash
 cd backend/
 pytest -m unit
 ```
 
-**Integration Tests** - Test API endpoints with database
+**Integration Tests**
 ```bash
 cd backend/
 pytest -m integration
 ```
 
-**E2E Tests (Backend)** - Test complete user workflows via API
+**E2E Tests (Backend)**
 ```bash
 cd backend/
 pytest -m e2e
@@ -180,8 +180,6 @@ cd backend/
 pytest --cov
 ```
 
-**Note:** You may see deprecation warnings (SQLAlchemy, Pydantic, httpx) - these are normal and don't affect functionality.
-
 ### Frontend Testing
 
 Run Angular unit tests:
@@ -197,8 +195,6 @@ Run tests once (no watch mode):
 cd frontend/hustle-hub-app/
 ng test --watch=false
 ```
-
-**Note:** You may see HTTP error messages in the console - these are expected when tests run without the backend server and don't affect test results.
 
 ### E2E Testing (Playwright)
 
@@ -225,8 +221,6 @@ npm test
 cd e2e/
 npm run test:ui
 ```
-
-**Note:** These tests focus on UI interactions and page loading. For comprehensive end-to-end workflow testing, use the backend E2E tests which provide full coverage of user journeys via API.
 
 ## Expected Outcome
 
