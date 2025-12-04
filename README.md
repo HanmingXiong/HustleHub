@@ -61,16 +61,11 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 **Update the database connection in `backend/database.py`:**
 
-The database connection string is hardcoded in `database.py`. Update it based on your operating system:
+The database connection string is hardcoded in `database.py`. For connecting to the database, change admin:admin to your Postgresql username:password.
 
-**For macOS/Linux:**
+**For macOS/Linux/Windows:**
 ```python
 URL_DATABASE = 'postgresql://admin:admin@localhost:5432/hustlehub'
-```
-
-**For Windows:**
-```python
-URL_DATABASE = 'postgresql://postgres:yourpassword@localhost:5432/hustlehub'
 ```
 
 **Start the server to create the database:**
